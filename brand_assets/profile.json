@@ -1,0 +1,34 @@
+{
+  "business": {
+    "name": "Apex Nexus",
+    "tagline": "Connecting Strategy to Execution",
+    "industry": "Professional Services — AI Consulting",
+    "description": "Apex Nexus is a professional services firm that helps SMEs adopt and implement AI solutions. The firm bridges the gap between AI strategy and real-world execution, delivering practical, outcome-driven results for businesses that need expert guidance navigating AI transformation.",
+    "website": "",
+    "target_market": "Small and medium-sized enterprises (SMEs) in Hong Kong seeking professional AI services, strategy, and implementation support",
+    "primary_offerings": [
+      "AI strategy consulting",
+      "AI implementation and deployment",
+      "AI workflow automation",
+      "AI readiness assessments",
+      "Custom AI solution development"
+    ],
+    "key_differentiators": [
+      "Strategic and commercial focus — outcome-driven, not technology-driven",
+      "End-to-end delivery from strategy through to execution",
+      "SME-specialist — right-sized engagements without enterprise overhead",
+      "Precise, structured methodology with measurable deliverables"
+    ],
+    "price_positioning": "Project-based and time & materials — flexible engagement models suited to SME budgets and scopes"
+  },
+  "brand": {
+    "primary_color": "#1F3A5F",
+    "secondary_color": "#2F5D8C",
+    "accent_color": "#C8A24A",
+    "text_color": "#1F3A5F",
+    "background_light": "#F3F4F6",
+    "font_family": "Helvetica",
+    "logo_filename": "logo.jpg",
+    "report_footer_text": "Confidential — Apex Nexus Internal Use Only"
+  }
+}

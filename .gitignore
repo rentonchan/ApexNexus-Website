@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+.env.local
+.DS_Store
+temporary screenshots/
+screenshot-*.png
+www.yeldra.com_.png
+CLAUDE.md
+.playwright-mcp/
