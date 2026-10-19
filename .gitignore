@@ -8,3 +8,5 @@ screenshot-*.png
 www.yeldra.com_.png
 CLAUDE.md
 .playwright-mcp/
+.vercel
+.env*

@@ -101,16 +101,17 @@ export default function App() {
       {/* ── NAV ──────────────────────────────────────────────────────────── */}
       <nav className="fixed top-0 left-0 right-0 z-50 border-b"
         style={{ background: 'rgba(5,9,20,0.85)', backdropFilter: 'blur(16px) saturate(1.5)', borderColor: B.blueB30 }}>
-        <div className="max-w-[1160px] mx-auto px-8 h-16 flex items-center justify-between">
+        <div className="max-w-[1160px] mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
           <a href="#" className="flex items-center gap-2.5 no-underline">
             <LogoMark size={28} />
             <span className="font-bold text-[0.95rem] tracking-tight text-white">Apex Nexus</span>
           </a>
-          <div className="flex items-center gap-6">
-            <a href="#how-it-works" className="text-sm text-white/55 hover:text-white transition-colors duration-150 no-underline">{t.nav.howItWorks}</a>
-            <a href="#services"     className="text-sm text-white/55 hover:text-white transition-colors duration-150 no-underline">{t.nav.services}</a>
-            <a href="#results"      className="text-sm text-white/55 hover:text-white transition-colors duration-150 no-underline">{t.nav.results}</a>
-            <a href="#about"        className="text-sm text-white/55 hover:text-white transition-colors duration-150 no-underline">{t.nav.about}</a>
+          <div className="flex items-center gap-3 md:gap-6">
+            <a href="#how-it-works" className="hidden md:inline text-sm text-white/55 hover:text-white transition-colors duration-150 no-underline">{t.nav.howItWorks}</a>
+            <a href="#services"     className="hidden md:inline text-sm text-white/55 hover:text-white transition-colors duration-150 no-underline">{t.nav.services}</a>
+            <a href="#offerings"    className="hidden md:inline text-sm text-white/55 hover:text-white transition-colors duration-150 no-underline">{t.nav.offerings}</a>
+            <a href="#results"      className="hidden md:inline text-sm text-white/55 hover:text-white transition-colors duration-150 no-underline">{t.nav.results}</a>
+            <a href="#about"        className="hidden md:inline text-sm text-white/55 hover:text-white transition-colors duration-150 no-underline">{t.nav.about}</a>
             <LangToggle lang={lang} onToggle={toggleLang} />
             <a href="#contact"
               className="text-xs font-semibold px-4 py-2 rounded-lg no-underline transition-all duration-150"
@@ -343,6 +344,56 @@ export default function App() {
               </ul>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ── OFFERINGS ────────────────────────────────────────────────────── */}
+      <section id="offerings" className="py-24 px-8" style={{ background: '#060d1b' }}>
+        <Divider />
+        <div className="max-w-[1160px] mx-auto pt-24">
+          <span className="block text-[0.72rem] font-bold uppercase tracking-[0.14em] mb-4" style={{ color: B.gold }}>
+            {t.offerings.label}
+          </span>
+          <h2 className="text-[clamp(1.7rem,4vw,2.6rem)] font-extrabold tracking-tight leading-[1.25] m-0 mb-4">
+            {t.offerings.h2a}<br />
+            <span style={{ color: B.goldLt }}>{t.offerings.h2b}</span>
+          </h2>
+          <p className="text-base m-0 mb-12 max-w-[560px]" style={{ color: '#8896a8' }}>{t.offerings.sub}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {t.offerings.items.map((o, i) => {
+              const accent = i === 0 ? '#7eb4e0' : B.goldLt
+              return (
+                <div key={o.h3} className="rounded-2xl p-8 flex flex-col transition-all duration-200 hover:-translate-y-0.5"
+                  style={{ background: '#0b1524', border: `1px solid ${B.blueB30}`, borderTop: `3px solid ${i === 0 ? B.blue : B.gold}` }}>
+                  <span className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] mb-3" style={{ color: accent, fontFamily: 'Roboto Mono, monospace' }}>{o.tag}</span>
+                  <h3 className="text-[1.3rem] font-bold tracking-tight m-0 mb-3">{o.h3}</h3>
+                  <p className="text-sm leading-[1.78] m-0 mb-6" style={{ color: '#8896a8' }}>{o.desc}</p>
+                  <ul className="list-none p-0 m-0 flex flex-col gap-2.5 mb-6">
+                    {o.points.map(pt => (
+                      <li key={pt} className="flex items-start gap-2.5 text-sm" style={{ color: 'rgba(255,255,255,0.82)' }}>
+                        <span className="font-bold mt-0.5 flex-shrink-0" style={{ color: accent }}>✓</span> {pt}
+                      </li>
+                    ))}
+                  </ul>
+                  {o.proof && (
+                    <p className="text-[0.82rem] leading-[1.65] m-0 mb-6 rounded-lg px-4 py-3"
+                      style={{ background: B.gold08, borderLeft: `3px solid ${B.gold}`, color: 'rgba(255,255,255,0.78)' }}>{o.proof}</p>
+                  )}
+                  <div className="mt-auto flex flex-wrap gap-x-6 gap-y-1 text-[0.8rem]" style={{ color: '#8896a8' }}>
+                    <span><b style={{ color: 'rgba(255,255,255,0.85)' }}>{t.offerings.bestFor}:</b> {o.bestFor}</span>
+                    <span><b style={{ color: 'rgba(255,255,255,0.85)' }}>{t.offerings.launch}:</b> {o.launch}</span>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+          <a href="/apex-nexus-offerings.pdf" target="_blank" rel="noopener"
+            className="inline-flex items-center mt-10 text-sm font-semibold px-5 py-2.5 rounded-lg no-underline transition-colors duration-150"
+            style={{ background: B.gold08, border: `1px solid ${B.goldB35}`, color: B.goldLt }}
+            onMouseOver={e => (e.currentTarget.style.background = B.gold12)}
+            onMouseOut={e  => (e.currentTarget.style.background = B.gold08)}>
+            {t.offerings.download}
+          </a>
         </div>
       </section>
 
