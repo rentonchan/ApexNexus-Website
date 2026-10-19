@@ -181,12 +181,6 @@ export default function App() {
             <p className="text-[0.72rem] uppercase tracking-[0.12em] mb-4" style={{ color: '#566070' }}>
               {t.hero.trustLine}
             </p>
-            <div className="flex items-center justify-center gap-10 flex-wrap">
-              {['Ascent', 'Lumina', 'Vantage', 'Meridian', 'Pinnacle'].map(name => (
-                <span key={name} className="text-[0.8rem] font-bold uppercase tracking-[0.09em]"
-                  style={{ color: 'rgba(255,255,255,0.15)' }}>{name}</span>
-              ))}
-            </div>
           </div>
         </div>
 
@@ -428,7 +422,7 @@ export default function App() {
       </section>
 
       {/* ── ABOUT ────────────────────────────────────────────────────────── */}
-      <section id="about" className="py-24 px-8" style={{ background: '#060d1b' }}>
+      <section id="about" className="py-24 px-8 overflow-hidden" style={{ background: '#060d1b' }}>
         <Divider />
         <div className="max-w-[1160px] mx-auto pt-24">
           <div className="grid grid-cols-2 gap-20 items-center">
@@ -568,7 +562,7 @@ export default function App() {
             <div className="flex flex-col gap-2.5">
               <a href="mailto:hello@apexnexus.hk" className="text-[0.82rem] no-underline hover:text-white transition-colors duration-150"
                 style={{ color: '#566070' }}>hello@apexnexus.hk</a>
-              <span className="text-[0.82rem]" style={{ color: '#566070' }}>Hong Kong SAR</span>
+              <span className="text-[0.82rem]" style={{ color: '#566070' }}>{lang === 'zh' ? '香港特別行政區' : 'Hong Kong SAR'}</span>
               <a href="https://linkedin.com" className="text-[0.82rem] no-underline hover:text-white transition-colors duration-150"
                 style={{ color: '#566070' }}>LinkedIn</a>
             </div>
