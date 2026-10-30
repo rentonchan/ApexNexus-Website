@@ -24,7 +24,7 @@ const ShaderBackground = () => {
     const float minorLineFrequency = 1.0;
     const vec4 gridColor = vec4(0.5);
     const float scale = 5.0;
-    const vec4 lineColor = vec4(0.18, 0.36, 0.55, 1.0);
+    const vec4 lineColor = vec4(0.72, 0.58, 0.30, 1.0);
     const float minLineWidth = 0.008;
     const float maxLineWidth = 0.15;
     const float lineSpeed = 1.0 * overallSpeed;
@@ -75,8 +75,8 @@ const ShaderBackground = () => {
       space.x += random(space.y * warpFrequency + iTime * warpSpeed + 2.0) * warpAmplitude * horizontalFade;
 
       vec4 lines = vec4(0.0);
-      vec4 bgColor1 = vec4(0.02, 0.04, 0.10, 1.0);
-      vec4 bgColor2 = vec4(0.04, 0.08, 0.16, 1.0);
+      vec4 bgColor1 = vec4(0.965, 0.953, 0.925, 1.0);
+      vec4 bgColor2 = vec4(0.945, 0.918, 0.860, 1.0);
 
       for(int l = 0; l < linesPerGroup; l++) {
         float normalizedLineIndex = float(l) / float(linesPerGroup);
@@ -97,9 +97,8 @@ const ShaderBackground = () => {
       }
 
       fragColor = mix(bgColor1, bgColor2, uv.x);
-      fragColor *= verticalFade;
       fragColor.a = 1.0;
-      fragColor += lines * 0.55;
+      fragColor += lines * (0.05 + 0.07 * verticalFade);
 
       gl_FragColor = fragColor;
     }
@@ -188,18 +187,17 @@ const ShaderBackground = () => {
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
-    let animFrameId: number;
+    let animFrameId = 0;
     const startTime = Date.now();
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    const render = () => {
-      const currentTime = (Date.now() - startTime) / 1000;
-
-      gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    const draw = (timeSeconds: number) => {
+      gl.clearColor(0.965, 0.953, 0.925, 1.0);
       gl.clear(gl.COLOR_BUFFER_BIT);
 
       gl.useProgram(programInfo.program);
       gl.uniform2f(programInfo.uniformLocations.resolution, canvas.width, canvas.height);
-      gl.uniform1f(programInfo.uniformLocations.time, currentTime);
+      gl.uniform1f(programInfo.uniformLocations.time, timeSeconds);
 
       gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
       gl.vertexAttribPointer(
@@ -209,13 +207,26 @@ const ShaderBackground = () => {
       gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
 
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    };
+
+    const render = () => {
+      draw((Date.now() - startTime) / 1000);
       animFrameId = requestAnimationFrame(render);
     };
 
-    animFrameId = requestAnimationFrame(render);
+    // Paint a still frame immediately, then start the loop after first paint
+    // so the animation does not compete with the initial render.
+    draw(0);
+    let delayId = 0;
+    if (!reduceMotion) {
+      delayId = window.setTimeout(() => {
+        animFrameId = requestAnimationFrame(render);
+      }, 1400);
+    }
 
     return () => {
       window.removeEventListener('resize', resizeCanvas);
+      window.clearTimeout(delayId);
       cancelAnimationFrame(animFrameId);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
