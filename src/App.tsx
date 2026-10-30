@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState, type FocusEvent, type FormEvent, type ReactNode } from 'react'
 import { T, type Lang } from './translations'
 
 const ShaderBackground = lazy(() => import('@/components/ui/shader-background'))
@@ -162,9 +162,23 @@ function SnapRow({ className, label, children }: { className: string; label: str
     el.scrollTo({ left, behavior: reduce ? 'auto' : 'smooth' })
   }
 
+  const onFocus = (e: FocusEvent<HTMLDivElement>) => {
+    const el = ref.current
+    const card = (e.target as HTMLElement).closest('article')
+    if (!el || !card || !el.contains(card)) return
+    const row = el.getBoundingClientRect()
+    const box = card.getBoundingClientRect()
+    if (box.left >= row.left - 2 && box.right <= row.right + 2) return
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    el.scrollTo({
+      left: el.scrollLeft + (box.left - row.left),
+      behavior: reduce ? 'auto' : 'smooth',
+    })
+  }
+
   return (
     <div>
-      <div ref={ref} className={className} aria-label={label}>{children}</div>
+      <div ref={ref} className={className} aria-label={label} onFocus={onFocus}>{children}</div>
       {count > 1 && (
         <div className="swipe-dots" role="group" aria-label={label}>
           {Array.from({ length: count }, (_, i) => (
