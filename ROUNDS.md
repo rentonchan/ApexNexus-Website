@@ -37,3 +37,15 @@ These rounds were committed straight to `main`. Each one is a single focused cha
 - HSBC Hong Kong (hsbc.com.hk) marks documents so a phone user is not surprised when a PDF takes over.
 
 **Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 99.
+
+## Round 34: Keep the page still while the menu is open
+
+**Change:** Opening the phone menu locks the page behind it, and tapping outside the menu closes it. Escape still closes it and returns focus to the menu button.
+
+**Inspiration:**
+
+- Apple Hong Kong (apple.com/hk) opens a menu over a page that stays put until you choose.
+- HSBC Hong Kong (hsbc.com.hk/zh-hk) expects a tap outside a panel to dismiss it.
+- McKinsey (mckinsey.com) keeps navigation from fighting the page scrolling underneath.
+
+**Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu open and Escape, and 404. Mobile Lighthouse performance was 99.

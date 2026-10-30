@@ -615,15 +615,24 @@ export default function App() {
   useEffect(() => {
     if (!menuOpen) return
     menuFirstLinkRef.current?.focus()
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') closeMenu(true)
+    }
+    const onPointer = (e: PointerEvent) => {
+      const nav = document.querySelector('nav')
+      if (nav && !nav.contains(e.target as Node)) setMenuOpen(false)
     }
     const desktop = window.matchMedia('(min-width: 768px)')
     const onDesktop = () => { if (desktop.matches) setMenuOpen(false) }
     window.addEventListener('keydown', onKey)
+    document.addEventListener('pointerdown', onPointer)
     desktop.addEventListener('change', onDesktop)
     return () => {
+      document.body.style.overflow = previousOverflow
       window.removeEventListener('keydown', onKey)
+      document.removeEventListener('pointerdown', onPointer)
       desktop.removeEventListener('change', onDesktop)
     }
   }, [menuOpen])
