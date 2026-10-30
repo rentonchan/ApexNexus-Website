@@ -258,6 +258,10 @@ export const T = {
       skip: 'Skip to main content',
       lang: 'Toggle language',
     },
+    meta: {
+      title: 'Apex Nexus — Connecting Strategy to Execution',
+      description: 'Apex Nexus turns AI into practical tools that save Hong Kong small businesses time every week. We start small, show you a working version in weeks, and build from there.',
+    },
     footer: {
       tagline: 'Connecting Strategy to Execution.\nPractical AI tools for Hong Kong SMEs.',
       services: { header: 'Services', links: ['Custom AI Assistant', 'Receipt & Expense Capture', 'AI Readiness Assessment', 'Workflow Automation'] },
@@ -525,6 +529,10 @@ export const T = {
     a11y: {
       skip: '跳至主要內容',
       lang: '切換語言',
+    },
+    meta: {
+      title: 'Apex Nexus — 連結策略與執行',
+      description: 'Apex Nexus把AI變成實用工具，每星期為香港中小企業節省時間。由小處著手，數星期內讓您看到可用的版本，再逐步擴展。',
     },
     footer: {
       tagline: '連結策略與執行。\n為香港中小企業打造實用AI工具。',

@@ -630,6 +630,8 @@ export default function App() {
 
   useEffect(() => {
     document.documentElement.lang = lang === 'zh' ? 'zh-Hant-HK' : 'en'
+    document.title = t.meta.title
+    document.querySelector('meta[name="description"]')?.setAttribute('content', t.meta.description)
     const existing = document.getElementById('faq-jsonld')
     const data = {
       '@context': 'https://schema.org',
