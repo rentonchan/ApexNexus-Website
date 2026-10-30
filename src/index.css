@@ -92,6 +92,10 @@ textarea::placeholder {
   color: #3E4C63;
   opacity: 1;
 }
+::selection {
+  background: #1F3A5F;
+  color: #F6F3EC;
+}
 .site-footer a:focus-visible {
   outline-color: #F6F3EC;
 }

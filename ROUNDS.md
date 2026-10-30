@@ -97,3 +97,15 @@ These rounds were committed straight to `main`. Each one is a single focused cha
 - Cathay Pacific (cathaypacific.com) expects a booking field’s hint to pass as readable text.
 
 **Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 100.
+
+## Round 39: Select text in the brand colours
+
+**Change:** Selected text is cream on navy, which is about 10:1. It uses the existing footer colours and does not change any wording.
+
+**Inspiration:**
+
+- Apple Hong Kong (apple.com/hk) treats selection as part of the brand, not the browser default.
+- McKinsey (mckinsey.com) uses its navy when text is highlighted.
+- Pentagram (pentagram.com) keeps a selected passage in the studio’s own colours.
+
+**Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 100.
