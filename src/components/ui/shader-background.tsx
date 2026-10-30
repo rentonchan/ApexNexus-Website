@@ -176,7 +176,7 @@ const ShaderBackground = () => {
     };
 
     const resizeCanvas = () => {
-      const dpr = window.devicePixelRatio || 1;
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       canvas.width = Math.floor(window.innerWidth * dpr);
       canvas.height = Math.floor(window.innerHeight * dpr);
       canvas.style.width = `${window.innerWidth}px`;
@@ -188,6 +188,7 @@ const ShaderBackground = () => {
     resizeCanvas();
 
     let animFrameId = 0;
+    let running = false;
     const startTime = Date.now();
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -209,9 +210,30 @@ const ShaderBackground = () => {
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     };
 
-    const render = () => {
-      draw((Date.now() - startTime) / 1000);
+    const stop = () => {
+      running = false;
+      cancelAnimationFrame(animFrameId);
+    };
+
+    let lastFrame = 0;
+    const render = (now: number) => {
+      if (!running) return;
+      if (now - lastFrame >= 34) {
+        lastFrame = now;
+        draw((Date.now() - startTime) / 1000);
+      }
       animFrameId = requestAnimationFrame(render);
+    };
+
+    const start = () => {
+      if (running || reduceMotion || document.hidden) return;
+      running = true;
+      animFrameId = requestAnimationFrame(render);
+    };
+
+    const onVisibility = () => {
+      if (document.hidden) stop();
+      else start();
     };
 
     // Paint a still frame immediately, then start the loop after first paint
@@ -219,15 +241,15 @@ const ShaderBackground = () => {
     draw(0);
     let delayId = 0;
     if (!reduceMotion) {
-      delayId = window.setTimeout(() => {
-        animFrameId = requestAnimationFrame(render);
-      }, 1400);
+      delayId = window.setTimeout(start, 1400);
     }
+    document.addEventListener('visibilitychange', onVisibility);
 
     return () => {
       window.removeEventListener('resize', resizeCanvas);
+      document.removeEventListener('visibilitychange', onVisibility);
       window.clearTimeout(delayId);
-      cancelAnimationFrame(animFrameId);
+      stop();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

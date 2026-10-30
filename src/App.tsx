@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
-import ShaderBackground from '@/components/ui/shader-background'
+import { lazy, Suspense, useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { T, type Lang } from './translations'
+
+const ShaderBackground = lazy(() => import('@/components/ui/shader-background'))
 
 const B = {
   gold: '#C8A24A',
@@ -98,6 +99,23 @@ const GhostLink = ({ href, children }: { href: string; children: ReactNode }) =>
     {children}
   </a>
 )
+
+function DecorBackground() {
+  const [show, setShow] = useState(false)
+  useEffect(() => {
+    const wide = window.matchMedia('(min-width: 768px)')
+    const update = () => setShow(wide.matches)
+    update()
+    wide.addEventListener('change', update)
+    return () => wide.removeEventListener('change', update)
+  }, [])
+  if (!show) return null
+  return (
+    <Suspense fallback={null}>
+      <ShaderBackground />
+    </Suspense>
+  )
+}
 
 const hkTime = () =>
   new Intl.DateTimeFormat('en-GB', {
@@ -542,7 +560,7 @@ export default function App() {
   return (
     <div className="min-h-screen font-sans" style={{ color: B.ink, paddingBottom: barOn ? '5.25rem' : undefined }}>
       <a href="#main" className="skip-link">{t.a11y.skip}</a>
-      <ShaderBackground />
+      <DecorBackground />
 
       <nav className="fixed top-0 left-0 right-0 z-50 border-b"
         style={{ background: 'rgba(246,243,236,0.9)', backdropFilter: 'blur(16px)', borderColor: B.line }}>
