@@ -570,7 +570,7 @@ export default function App() {
       <main id="main">
         <section id="top" className="relative pt-24 pb-10 md:pt-28 md:pb-16 px-5 md:px-8 overflow-hidden">
           <div className="max-w-[1160px] mx-auto grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
-            <div className="min-w-0">
+            <div className="hero-copy min-w-0">
               <div
                 className="inline-flex items-center gap-2 text-[0.76rem] font-semibold px-3.5 py-1.5 rounded-full mb-5"
                 style={{ background: 'rgba(200,162,74,0.12)', border: '1px solid rgba(138,100,24,0.35)', color: B.goldInk }}
@@ -578,14 +578,14 @@ export default function App() {
                 <span aria-hidden="true">◆</span>
                 {t.hero.badge}
               </div>
-              <h1 className="text-[clamp(2.3rem,5.2vw,4rem)] font-black leading-[1.05] tracking-[-0.03em] m-0" style={{ color: B.ink }}>
-                {t.hero.h1a}<br />
-                <span style={{ color: B.goldInk }}>{t.hero.h1b}</span>
+              <h1 className="hero-title">
+                <span className="hero-line">{t.hero.h1a}</span>
+                <span className="hero-line hero-gold">{t.hero.h1b}</span>
               </h1>
-              <p className="text-[1.02rem] max-w-[34rem] leading-[1.75] mt-5 mb-0" style={{ color: B.muted }}>
+              <p className="text-[1.02rem] max-w-[34rem] leading-[1.7] mt-4 mb-0" style={{ color: B.muted }}>
                 {t.hero.sub}
               </p>
-              <div className="flex gap-3 flex-wrap mt-6">
+              <div className="flex gap-3 flex-wrap mt-5">
                 <PrimaryLink href="#contact">{t.hero.ctaPrimary}</PrimaryLink>
                 <GhostLink href="#how-it-works">{t.hero.ctaSecondary}</GhostLink>
               </div>

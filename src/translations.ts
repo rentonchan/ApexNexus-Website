@@ -12,7 +12,7 @@ export const T = {
     },
     hero: {
       badge:    'Independent Strategic Advisory · Hong Kong',
-      h1a:      'Engineering high-value outcomes',
+      h1a:      'Engineering high\u2011value outcomes',
       h1b:      'through applied AI.',
       sub:      'Apex Nexus turns AI into practical tools that save Hong Kong small businesses time every week. We start small, show you a working version in weeks, and build from there.',
       ctaPrimary:   'Book a free consultation →',

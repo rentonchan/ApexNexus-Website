@@ -83,6 +83,23 @@ html, body { overflow-x: clip; }
   outline-offset: 2px;
 }
 
+.hero-copy {
+  container-type: inline-size;
+}
+.hero-title {
+  margin: 0;
+  color: #102039;
+  font-weight: 900;
+  letter-spacing: -0.032em;
+  line-height: 1.08;
+  font-size: clamp(2rem, 9.2cqi, 3rem);
+  text-wrap: balance;
+  hyphens: none;
+  word-break: keep-all;
+}
+.hero-line { display: block; }
+.hero-gold { color: #8A6418; }
+
 .section-pad {
   padding: 4.25rem 1.25rem;
   scroll-margin-top: 5rem;
