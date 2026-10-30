@@ -261,6 +261,9 @@ html, body { overflow-x: clip; }
 }
 @media (max-width: 767px) {
   .swipe-dots { display: flex; }
+  input, textarea, select {
+    font-size: 16px;
+  }
 }
 @media (min-width: 768px) {
   .swipe-row {
