@@ -537,7 +537,7 @@ function Booking({
                     </div>
                   </div>
 
-                  <details className="mt-4">
+                  <details className="book-more mt-4">
                     <summary className="text-sm font-semibold cursor-pointer" style={{ color: B.goldInk }}>
                       {b.detailsToggle}
                     </summary>

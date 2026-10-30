@@ -157,3 +157,15 @@ These rounds were committed straight to `main`. Each one is a single focused cha
 - Cathay Pacific (cathaypacific.com) repeats the selected option where the form is, not only where you tapped.
 
 **Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 99.
+
+## Round 44: Make the optional-details control easier to tap
+
+**Change:** “Add details (optional): business, call language” / 「補充資料（選填）：公司／業務、通話語言」 is at least 44px tall, so a thumb can open it without aiming at the text.
+
+**Inspiration:**
+
+- Apple Hong Kong (apple.com/hk) sizes a disclosure control for a finger, not for a mouse.
+- HSBC Hong Kong (hsbc.com.hk) gives optional form sections a full-width tap target.
+- Cathay Pacific (cathaypacific.com) does not hide an extra step behind a tiny line of type.
+
+**Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 99.

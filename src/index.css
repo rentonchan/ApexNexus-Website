@@ -55,6 +55,11 @@ html {
   padding-top: 0.625rem;
   padding-bottom: calc(0.625rem + env(safe-area-inset-bottom));
 }
+.book-more summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
 
 body {
   background-color: var(--bg);
