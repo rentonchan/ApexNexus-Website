@@ -599,6 +599,7 @@ export default function App() {
   const [interest, setInterest] = useState<InterestId>('unsure')
   const [barOn, setBarOn] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [current, setCurrent] = useState('')
   const menuButtonRef = useRef<HTMLButtonElement>(null)
   const menuFirstLinkRef = useRef<HTMLAnchorElement>(null)
   const t = T[lang]
@@ -666,6 +667,27 @@ export default function App() {
     }
   }, [])
 
+  useEffect(() => {
+    const ids = ['offerings', 'results', 'contact', 'how-it-works', 'services', 'about']
+    const els = ids.map(id => document.getElementById(id)).filter((el): el is HTMLElement => !!el)
+    const io = new IntersectionObserver((entries) => {
+      const hit = entries
+        .filter(entry => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
+      if (hit?.target.id) setCurrent(hit.target.id)
+    }, { rootMargin: '-20% 0px -55% 0px', threshold: [0.15, 0.4, 0.7] })
+    els.forEach(el => io.observe(el))
+    return () => io.disconnect()
+  }, [])
+
+  const sectionLinks = [
+    ['#offerings', 'offerings', t.nav.offerings],
+    ['#results', 'results', t.nav.results],
+    ['#how-it-works', 'how-it-works', t.nav.howItWorks],
+    ['#services', 'services', t.nav.services],
+    ['#about', 'about', t.nav.about],
+  ] as const
+
   const receiptProof = `${t.results.cases[1].metric} ${t.results.cases[1].desc}`
 
   return (
@@ -681,11 +703,21 @@ export default function App() {
             <span className="font-bold text-[0.95rem] tracking-tight whitespace-nowrap">Apex Nexus</span>
           </a>
           <div className="flex items-center gap-2 md:gap-6">
-            <a href="#offerings" className="hidden md:inline text-sm no-underline" style={{ color: B.muted }}>{t.nav.offerings}</a>
-            <a href="#results" className="hidden md:inline text-sm no-underline" style={{ color: B.muted }}>{t.nav.results}</a>
-            <a href="#how-it-works" className="hidden md:inline text-sm no-underline" style={{ color: B.muted }}>{t.nav.howItWorks}</a>
-            <a href="#services" className="hidden md:inline text-sm no-underline" style={{ color: B.muted }}>{t.nav.services}</a>
-            <a href="#about" className="hidden md:inline text-sm no-underline" style={{ color: B.muted }}>{t.nav.about}</a>
+            {sectionLinks.map(([href, id, label]) => (
+              <a
+                key={href}
+                href={href}
+                aria-current={current === id ? 'true' : undefined}
+                className="hidden md:inline text-sm no-underline"
+                style={{
+                  color: current === id ? B.ink : B.muted,
+                  fontWeight: current === id ? 700 : 500,
+                  boxShadow: current === id ? 'inset 0 -2px 0 #C8A24A' : undefined,
+                }}
+              >
+                {label}
+              </a>
+            ))}
             <button
               ref={menuButtonRef}
               type="button"
@@ -713,19 +745,19 @@ export default function App() {
           style={{ background: '#F6F3EC', borderColor: B.line }}
         >
           <div className="max-w-[1160px] mx-auto px-4 py-2 flex flex-col">
-            {([
-              ['#offerings', t.nav.offerings],
-              ['#results', t.nav.results],
-              ['#how-it-works', t.nav.howItWorks],
-              ['#services', t.nav.services],
-              ['#about', t.nav.about],
-            ] as const).map(([href, label], i) => (
+            {sectionLinks.map(([href, id, label], i) => (
               <a
                 key={href}
                 ref={i === 0 ? menuFirstLinkRef : undefined}
                 href={href}
-                className="no-underline text-base font-semibold py-3"
-                style={{ color: B.ink, borderBottom: i < 4 ? `1px solid ${B.line}` : undefined }}
+                aria-current={current === id ? 'true' : undefined}
+                className="no-underline text-base py-3"
+                style={{
+                  color: B.ink,
+                  fontWeight: current === id ? 700 : 500,
+                  borderBottom: i < 4 ? `1px solid ${B.line}` : undefined,
+                  boxShadow: current === id ? 'inset 3px 0 0 #C8A24A' : undefined,
+                }}
                 onClick={() => setMenuOpen(false)}
               >
                 {label}
