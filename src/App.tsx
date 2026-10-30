@@ -741,15 +741,17 @@ export default function App() {
                 {t.hiw.cta}
               </a>
             </div>
-            <div className="grid md:grid-cols-3 gap-8">
+            <ol className="hiw-track">
               {t.hiw.steps.map(({ num, title, desc }) => (
-                <div key={num}>
-                  <div className="font-mono text-[2.4rem] font-bold leading-none mb-3" style={{ color: 'rgba(138,100,24,0.35)' }}>{num}</div>
-                  <h3 className="text-[1.05rem] font-bold m-0 mb-2">{title}</h3>
-                  <p className="text-sm leading-[1.75] m-0" style={{ color: B.muted }}>{desc}</p>
-                </div>
+                <li key={num} className="hiw-step">
+                  <div className="hiw-mark" aria-hidden="true">{num}</div>
+                  <div>
+                    <h3 className="text-[1.05rem] font-bold m-0 mb-2">{title}</h3>
+                    <p className="text-sm leading-[1.75] m-0" style={{ color: B.muted }}>{desc}</p>
+                  </div>
+                </li>
               ))}
-            </div>
+            </ol>
           </div>
         </section>
 
