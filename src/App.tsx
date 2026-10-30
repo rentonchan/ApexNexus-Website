@@ -558,7 +558,7 @@ export default function App() {
   const receiptProof = `${t.results.cases[1].metric} ${t.results.cases[1].desc}`
 
   return (
-    <div className="min-h-screen font-sans" style={{ color: B.ink, paddingBottom: barOn ? '5.25rem' : undefined }}>
+    <div className={`min-h-screen font-sans${lang === 'zh' ? ' lang-zh' : ''}`} style={{ color: B.ink, paddingBottom: barOn ? '5.25rem' : undefined }}>
       <a href="#main" className="skip-link">{t.a11y.skip}</a>
       <DecorBackground />
 
