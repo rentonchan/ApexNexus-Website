@@ -49,6 +49,7 @@ html {
 
 body {
   background-color: var(--bg);
+  background-image: radial-gradient(ellipse 70% 45% at 80% 0%, rgba(200, 162, 74, 0.09), transparent 62%);
   color: var(--ink);
   margin: 0;
 }
