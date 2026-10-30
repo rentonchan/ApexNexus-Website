@@ -52,18 +52,20 @@ const LogoMark = ({ size = 30, light = false }: { size?: number; light?: boolean
   )
 }
 
-const LangToggle = ({ lang, onToggle, label }: { lang: Lang; onToggle: () => void; label: string }) => (
-  <button
-    type="button"
-    onClick={onToggle}
-    className="relative flex items-center rounded-full text-[0.72rem] font-semibold cursor-pointer select-none"
-    style={{ background: '#fff', border: `1px solid ${B.line}`, padding: '3px' }}
+const LangToggle = ({ lang, onSet, label }: { lang: Lang; onSet: (next: Lang) => void; label: string }) => (
+  <div
+    role="group"
     aria-label={label}
+    className="relative flex items-center rounded-full text-[0.72rem] font-semibold select-none"
+    style={{ background: '#fff', border: `1px solid ${B.line}`, padding: '3px' }}
   >
     {(['en', 'zh'] as Lang[]).map(l => (
-      <span
+      <button
         key={l}
-        className="relative z-10 px-2.5 py-1 rounded-full transition-colors duration-200"
+        type="button"
+        aria-pressed={lang === l}
+        onClick={() => onSet(l)}
+        className="relative z-10 px-2.5 py-1 rounded-full border-0 cursor-pointer"
         style={{
           background: lang === l ? B.gold : 'transparent',
           color: lang === l ? B.ink : B.muted,
@@ -72,9 +74,9 @@ const LangToggle = ({ lang, onToggle, label }: { lang: Lang; onToggle: () => voi
         }}
       >
         {l === 'en' ? 'EN' : '中文'}
-      </span>
+      </button>
     ))}
-  </button>
+  </div>
 )
 
 const Eyebrow = ({ children }: { children: ReactNode }) => (
@@ -604,7 +606,6 @@ export default function App() {
   const menuFirstLinkRef = useRef<HTMLAnchorElement>(null)
   const t = T[lang]
 
-  const toggleLang = () => setLang(l => l === 'en' ? 'zh' : 'en')
   const choose = (id: InterestId) => setInterest(id)
   const closeMenu = (returnFocus = false) => {
     setMenuOpen(false)
@@ -730,7 +731,7 @@ export default function App() {
             >
               <span aria-hidden="true" className="text-lg leading-none">{menuOpen ? '×' : '☰'}</span>
             </button>
-            <LangToggle lang={lang} onToggle={toggleLang} label={t.a11y.lang} />
+            <LangToggle lang={lang} onSet={setLang} label={t.a11y.lang} />
             <a href="#contact"
               className="text-xs font-semibold px-3 md:px-4 py-2 rounded-lg no-underline whitespace-nowrap"
               style={{ background: B.gold, color: B.ink }}>
