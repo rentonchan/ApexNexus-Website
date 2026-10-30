@@ -145,3 +145,15 @@ These rounds were committed straight to `main`. Each one is a single focused cha
 - Apple Hong Kong (apple.com/hk) does not leave a required mark unexplained.
 
 **Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 99.
+
+## Round 43: Announce which offering was chosen
+
+**Change:** When a card pre-selects an offering, a visually hidden live region reads the existing label, for example “Interested in: Custom AI Assistant” or 「感興趣的方案：定制AI助手」. The chips were already highlighted.
+
+**Inspiration:**
+
+- Apple Hong Kong (apple.com/hk) confirms a choice you made from another part of the page.
+- IDEO (ideo.com) connects a piece of work to the next step so the choice is explicit.
+- Cathay Pacific (cathaypacific.com) repeats the selected option where the form is, not only where you tapped.
+
+**Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 99.

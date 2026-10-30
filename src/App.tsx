@@ -284,6 +284,8 @@ function Booking({
   const confirmRef = useRef<HTMLHeadingElement>(null)
   const messageRef = useRef<HTMLTextAreaElement>(null)
   const [clock, setClock] = useState(hkTime)
+  const [interestNote, setInterestNote] = useState('')
+  const interestFirst = useRef(true)
 
   useEffect(() => {
     const id = window.setInterval(() => setClock(hkTime()), 30000)
@@ -293,6 +295,14 @@ function Booking({
   useEffect(() => {
     setSubmitted(false)
   }, [interest])
+
+  useEffect(() => {
+    if (interestFirst.current) {
+      interestFirst.current = false
+      return
+    }
+    setInterestNote(`${b.interest}: ${b.interests[interest]}`)
+  }, [interest, b])
 
   useEffect(() => {
     if (!submitted) return
@@ -503,6 +513,7 @@ function Booking({
 
                   <div className="mt-4">
                     <div className="text-sm font-medium mb-2">{b.interest}</div>
+                    <p className="book-live" aria-live="polite">{interestNote}</p>
                     <div className="flex flex-wrap gap-2" role="group" aria-label={b.interest}>
                       {(Object.keys(b.interests) as InterestId[]).map(id => {
                         const on = interest === id
