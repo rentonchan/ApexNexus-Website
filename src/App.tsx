@@ -925,11 +925,21 @@ export default function App() {
               <span style={{ color: B.goldInk }}>{t.results.h2b}</span>
             </h2>
             <SnapRow className="swipe-row swipe-3" label={t.results.label}>
-              {t.results.cases.map(({ metric, desc, detail, tag }) => (
+              {t.results.cases.map(({ metric, desc, detail, tag }, i) => (
                 <article key={metric} className="rounded-2xl p-6 flex flex-col gap-3" style={{ background: '#fff', border: `1px solid ${B.line}` }}>
                   <div className="font-mono text-[2.2rem] font-bold leading-none" style={{ color: B.goldInk }}>{metric}</div>
                   <div className="text-sm font-semibold leading-[1.45]">{desc}</div>
                   <p className="text-[0.82rem] leading-[1.7] m-0 flex-1" style={{ color: B.muted }}>{detail}</p>
+                  {i === 2 && (
+                    <a
+                      href="#contact"
+                      onClick={() => choose('unsure')}
+                      className="inline-flex items-center justify-center text-sm font-semibold px-4 py-2.5 rounded-lg no-underline"
+                      style={{ background: B.gold, color: B.ink }}
+                    >
+                      {t.hero.ctaPrimary}
+                    </a>
+                  )}
                   <div className="inline-flex self-start text-[0.68rem] font-semibold px-2.5 py-1 rounded-full" style={{ background: 'rgba(200,162,74,0.12)', color: B.goldInk }}>
                     {tag}
                   </div>
