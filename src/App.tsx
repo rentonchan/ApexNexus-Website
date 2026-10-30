@@ -1117,7 +1117,7 @@ export default function App() {
       </footer>
 
       {barOn && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden px-3 py-2.5" style={{ background: 'rgba(246,243,236,0.96)', borderTop: `1px solid ${B.line}`, backdropFilter: 'blur(12px)' }}>
+        <div className="book-bar fixed bottom-0 left-0 right-0 z-50 md:hidden px-3" style={{ background: 'rgba(246,243,236,0.96)', borderTop: `1px solid ${B.line}`, backdropFilter: 'blur(12px)' }}>
           <div className="flex items-center gap-3">
             <div className="min-w-0 flex-1">
               <div className="text-sm font-semibold leading-tight truncate">{t.sticky.title}</div>

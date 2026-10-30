@@ -46,6 +46,15 @@ html {
   scroll-behavior: smooth;
   color-scheme: light;
 }
+@media (max-width: 767px) {
+  html {
+    scroll-padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+  }
+}
+.book-bar {
+  padding-top: 0.625rem;
+  padding-bottom: calc(0.625rem + env(safe-area-inset-bottom));
+}
 
 body {
   background-color: var(--bg);

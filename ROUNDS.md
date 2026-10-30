@@ -109,3 +109,15 @@ These rounds were committed straight to `main`. Each one is a single focused cha
 - Pentagram (pentagram.com) keeps a selected passage in the studio’s own colours.
 
 **Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 100.
+
+## Round 40: Keep the booking bar clear of the home indicator
+
+**Change:** The mobile booking bar adds the iPhone safe-area inset, and the page leaves that same space when it scrolls a section into view, so a focused control is not hidden behind the bar. `viewport-fit=cover` is set so the inset is real.
+
+**Inspiration:**
+
+- Apple Hong Kong (apple.com/hk) keeps controls above the home indicator.
+- Cathay Pacific (cathaypacific.com) does not let a bottom bar cover the field you are using.
+- HSBC Hong Kong (hsbc.com.hk) pads the bottom of a phone screen for the system gesture area.
+
+**Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 99.
