@@ -83,6 +83,10 @@ html, body { overflow-x: clip; }
   outline: 2px solid #8A6418;
   outline-offset: 2px;
 }
+p a {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
 .site-footer a:focus-visible {
   outline-color: #F6F3EC;
 }

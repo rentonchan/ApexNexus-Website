@@ -49,3 +49,15 @@ These rounds were committed straight to `main`. Each one is a single focused cha
 - McKinsey (mckinsey.com) keeps navigation from fighting the page scrolling underneath.
 
 **Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu open and Escape, and 404. Mobile Lighthouse performance was 99.
+
+## Round 35: Underline links that sit inside a sentence
+
+**Change:** Links inside a paragraph, such as “Not sure which fits?” and “Prefer to email directly?”, are underlined so they read as links rather than coloured words. Buttons are unchanged.
+
+**Inspiration:**
+
+- GOV.UK underlines text links; the pages I actually opened were these three. Apple Hong Kong (apple.com/hk) makes a text link look different from the sentence around it.
+- McKinsey (mckinsey.com) underlines links that appear in running copy.
+- IDEO (ideo.com) keeps a text link distinct from a button.
+
+**Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 99.
