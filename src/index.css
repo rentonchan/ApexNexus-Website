@@ -87,6 +87,11 @@ p a {
   text-decoration: underline;
   text-underline-offset: 0.15em;
 }
+input::placeholder,
+textarea::placeholder {
+  color: #3E4C63;
+  opacity: 1;
+}
 .site-footer a:focus-visible {
   outline-color: #F6F3EC;
 }

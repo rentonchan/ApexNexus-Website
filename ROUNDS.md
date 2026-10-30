@@ -85,3 +85,15 @@ These rounds were committed straight to `main`. Each one is a single focused cha
 - HSBC Hong Kong (hsbc.com.hk) always leaves a direct contact path.
 
 **Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 99.
+
+## Round 38: Make the form hint readable
+
+**Change:** Placeholder text in the booking fields uses the same muted ink as body text (`#3E4C63` on white, about 8.5:1) instead of the browser’s faint grey.
+
+**Inspiration:**
+
+- Apple Hong Kong (apple.com/hk) keeps hint text dark enough to read on a light field.
+- HSBC Hong Kong (hsbc.com.hk) does not rely on pale grey for the words inside a field.
+- Cathay Pacific (cathaypacific.com) expects a booking field’s hint to pass as readable text.
+
+**Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 100.
