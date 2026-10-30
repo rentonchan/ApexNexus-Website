@@ -281,6 +281,12 @@ function Booking({
   const [mail, setMail] = useState<{ href: string; text: string } | null>(null)
   const confirmRef = useRef<HTMLHeadingElement>(null)
   const messageRef = useRef<HTMLTextAreaElement>(null)
+  const [clock, setClock] = useState(hkTime)
+
+  useEffect(() => {
+    const id = window.setInterval(() => setClock(hkTime()), 30000)
+    return () => window.clearInterval(id)
+  }, [])
 
   useEffect(() => {
     setSubmitted(false)
@@ -381,7 +387,10 @@ function Booking({
                 </li>
               ))}
             </ol>
-            <p className="text-sm leading-[1.65] mt-5 mb-0" style={{ color: B.ink }}>{b.contactNote}</p>
+            <p className="text-sm leading-[1.65] mt-5 mb-2" style={{ color: B.ink }}>{b.contactNote}</p>
+            <p className="text-sm m-0 font-semibold" style={{ color: B.muted }}>
+              <time dateTime={clock}>{b.contactHours} {clock}</time>
+            </p>
             {SHOW_CONTACT_CARD && (
               <div className="mt-6">
                 <ContactCard note={b.contactNote} hours={b.contactHours} />
