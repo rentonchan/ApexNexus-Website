@@ -9,6 +9,8 @@ export const T = {
       results:    'Our work',
       about:      'About',
       bookCall:   'Book a call →',
+      menu:       'Menu',
+      close:      'Close',
     },
     hero: {
       badge:    'Independent Strategic Advisory · Hong Kong',
@@ -275,6 +277,8 @@ export const T = {
       results:    '作品',
       about:      '關於我們',
       bookCall:   '預約通話 →',
+      menu:       '選單',
+      close:      '關閉',
     },
     hero: {
       badge:    '獨立策略顧問平台・香港',
