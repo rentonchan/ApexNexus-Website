@@ -1,4 +1,4 @@
-import { useEffect, useId, useState, type FormEvent, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import ShaderBackground from '@/components/ui/shader-background'
 import { T, type Lang } from './translations'
 
@@ -129,14 +129,13 @@ function ContactCard({ note, hours }: { note: string; hours: string }) {
 
 function FaqList({ items, label }: { label: string; items: readonly { q: string; a: string }[] }) {
   const [open, setOpen] = useState<Record<number, boolean>>({})
-  const base = useId()
   return (
     <div>
       <h3 className="text-base font-bold m-0 mb-3">{label}</h3>
       <div className="flex flex-col" style={{ borderTop: `1px solid ${B.line}` }}>
         {items.map((item, i) => {
           const expanded = !!open[i]
-          const panelId = `${base}-faq-${i}`
+          const panelId = `faq-panel-${i}`
           return (
             <div key={item.q} style={{ borderBottom: `1px solid ${B.line}` }}>
               <button
@@ -173,48 +172,85 @@ function Booking({
   setInterest: (id: InterestId) => void
 }) {
   const b = t.booking
+  const fieldBorder = '#7f8a9c'
   const [name, setName] = useState('')
   const [business, setBusiness] = useState('')
   const [email, setEmail] = useState('')
   const [task, setTask] = useState('')
-  const [callLang, setCallLang] = useState('')
-  const [detailsOpen, setDetailsOpen] = useState(false)
-  const [errors, setErrors] = useState<{ name?: string; email?: string; task?: string }>({})
+  const [langIdx, setLangIdx] = useState(0)
+  const [formError, setFormError] = useState('')
   const [submitted, setSubmitted] = useState(false)
-  const detailsId = useId()
+  const [copied, setCopied] = useState(false)
+  const [mail, setMail] = useState<{ href: string; text: string } | null>(null)
+  const confirmRef = useRef<HTMLHeadingElement>(null)
+  const messageRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     setSubmitted(false)
   }, [interest])
 
-  const onSubmit = (e: FormEvent) => {
-    e.preventDefault()
-    const next: typeof errors = {}
-    if (!name.trim()) next.name = b.errors.name
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) next.email = b.errors.email
-    if (!task.trim()) next.task = b.errors.task
-    setErrors(next)
-    if (Object.keys(next).length) {
-      const first = next.name ? 'book-name' : next.email ? 'book-email' : 'book-task'
-      document.getElementById(first)?.focus()
-      return
-    }
-    const lines = [
-      `${b.name}: ${name.trim()}`,
-      business.trim() ? `${b.business}: ${business.trim()}` : '',
-      `${b.email}: ${email.trim()}`,
-      `${b.task}: ${task.trim()}`,
-      callLang ? `${b.language}: ${callLang}` : '',
-      `${b.interest}: ${b.interests[interest]}`,
-    ].filter(Boolean)
-    const href = `mailto:hello@apexnexus.hk?subject=${encodeURIComponent(b.subject)}&body=${encodeURIComponent(lines.join('\n'))}`
+  useEffect(() => {
+    if (!submitted) return
+    const el = confirmRef.current
+    if (!el) return
+    el.focus({ preventScroll: true })
+    el.scrollIntoView({ block: 'start', behavior: 'auto' })
+  }, [submitted])
+
+  const invalid = {
+    name: !name.trim(),
+    email: !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()),
+    task: !task.trim(),
+  }
+  const showError = !!formError && (invalid.name || invalid.email || invalid.task)
+
+  const openMail = (href: string) => {
     const a = document.createElement('a')
     a.href = href
     a.rel = 'nofollow'
     document.body.appendChild(a)
     a.click()
     a.remove()
+  }
+
+  const onSubmit = (e: FormEvent) => {
+    e.preventDefault()
+    if (invalid.name || invalid.email || invalid.task) {
+      setFormError(b.errors.form)
+      setSubmitted(false)
+      const first = invalid.task ? 'book-task' : invalid.name ? 'book-name' : 'book-email'
+      document.getElementById(first)?.focus()
+      return
+    }
+    setFormError('')
+    const body = `${b.name}: ${name.trim()}\n${b.business}: ${business.trim()}\n${b.email}: ${email.trim()}\n${b.language}: ${b.langs[langIdx]}\n${b.interest}: ${b.interests[interest]}\n\n${b.task}\n${task.trim()}\n`
+    const subject = `${b.subject} — ${business.trim() || name.trim()}`
+    const href = `mailto:hello@apexnexus.hk?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+    const text = `${b.confirmTo}: hello@apexnexus.hk\n${b.confirmSubject}: ${subject}\n\n${body}`
+    setMail({ href, text })
+    setCopied(false)
+    openMail(href)
     setSubmitted(true)
+  }
+
+  const copyMessage = () => {
+    const text = mail?.text ?? ''
+    const fallback = () => {
+      const el = messageRef.current
+      if (!el) return
+      el.focus()
+      el.select()
+      try {
+        if (document.execCommand('copy')) setCopied(true)
+      } catch {
+        /* clipboard unavailable */
+      }
+    }
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).then(() => setCopied(true), fallback)
+    } else {
+      fallback()
+    }
   }
 
   return (
@@ -248,6 +284,7 @@ function Booking({
                 </li>
               ))}
             </ol>
+            <p className="text-sm leading-[1.65] mt-5 mb-0" style={{ color: B.ink }}>{b.contactNote}</p>
             {SHOW_CONTACT_CARD && (
               <div className="mt-6">
                 <ContactCard note={b.contactNote} hours={b.contactHours} />
@@ -257,59 +294,61 @@ function Booking({
 
           <div className="flex flex-col gap-8">
             <div className="rounded-2xl p-6 md:p-7" style={{ background: B.card, border: `1px solid ${B.line}`, boxShadow: '0 10px 40px rgba(16,32,57,0.05)' }}>
-              {submitted ? (
-                <div role="status" aria-live="polite">
-                  <h3 className="text-xl font-bold m-0 mb-3">{b.confirmTitle}</h3>
-                  <p className="text-sm leading-[1.7] m-0" style={{ color: B.muted }}>{b.confirmBody}</p>
-                  <p className="text-sm mt-3 mb-5">
+              {submitted && mail ? (
+                <div className="book-conf">
+                  <h3
+                    ref={confirmRef}
+                    tabIndex={-1}
+                    className="text-xl font-bold m-0 outline-none"
+                  >
+                    {b.confirmTitle}
+                  </h3>
+                  <p className="text-sm leading-[1.7] m-0" role="status" style={{ color: B.muted }}>{b.confirmNote}</p>
+                  <label className="flex flex-col gap-1.5 text-sm font-medium" htmlFor="book-msg">
+                    {b.confirmMessageLabel}
+                    <textarea
+                      id="book-msg"
+                      ref={messageRef}
+                      readOnly
+                      rows={8}
+                      value={mail.text}
+                      className="book-msg rounded-lg px-3 py-2.5"
+                      style={{ border: `1px solid ${fieldBorder}`, background: '#F6F3EC', color: B.ink }}
+                    />
+                  </label>
+                  <div className="book-actions">
+                    <button
+                      type="button"
+                      className="text-sm font-semibold px-4 rounded-lg cursor-pointer border-0"
+                      style={{ background: B.gold, color: B.ink, minHeight: 44 }}
+                      onClick={copyMessage}
+                    >
+                      {copied ? `✓ ${b.confirmCopied}` : b.confirmCopy}
+                    </button>
+                    <a
+                      href={mail.href}
+                      className="book-ghost"
+                    >
+                      {b.confirmOpen}
+                    </a>
+                    <button
+                      type="button"
+                      className="book-ghost"
+                      onClick={() => { setSubmitted(false); setCopied(false) }}
+                    >
+                      {b.confirmEdit}
+                    </button>
+                  </div>
+                  <p className="book-live" aria-live="polite">{copied ? b.confirmCopied : ''}</p>
+                  <p className="text-xs m-0" style={{ color: B.muted }}>
+                    {b.prefer}{' '}
                     <a href="mailto:hello@apexnexus.hk" style={{ color: B.goldInk }}>hello@apexnexus.hk</a>
                   </p>
-                  <button
-                    type="button"
-                    className="text-sm font-semibold px-5 py-3 rounded-lg cursor-pointer border-0"
-                    style={{ background: B.gold, color: B.ink }}
-                    onClick={() => setSubmitted(false)}
-                  >
-                    {b.confirmBack}
-                  </button>
                 </div>
               ) : (
-                <form onSubmit={onSubmit} noValidate>
+                <form onSubmit={onSubmit} noValidate aria-describedby={showError ? 'book-form-err' : undefined}>
                   <h3 className="text-lg font-bold m-0 mb-4">{b.formTitle}</h3>
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <label className="flex flex-col gap-1.5 text-sm font-medium">
-                      {b.name} <span style={{ color: B.goldInk }}>*</span>
-                      <input
-                        id="book-name"
-                        name="name"
-                        autoComplete="name"
-                        value={name}
-                        onChange={e => setName(e.target.value)}
-                        aria-invalid={!!errors.name}
-                        aria-describedby={errors.name ? 'book-name-err' : undefined}
-                        className="rounded-lg px-3 py-2.5 text-sm font-normal"
-                        style={{ border: `1px solid ${errors.name ? '#9B2335' : B.line}`, background: '#fff', color: B.ink }}
-                      />
-                      {errors.name && <span id="book-name-err" className="text-xs font-normal" style={{ color: '#9B2335' }}>{errors.name}</span>}
-                    </label>
-                    <label className="flex flex-col gap-1.5 text-sm font-medium sm:col-span-1">
-                      {b.email} <span style={{ color: B.goldInk }}>*</span>
-                      <input
-                        id="book-email"
-                        name="email"
-                        type="email"
-                        autoComplete="email"
-                        value={email}
-                        onChange={e => setEmail(e.target.value)}
-                        aria-invalid={!!errors.email}
-                        aria-describedby={errors.email ? 'book-email-err' : undefined}
-                        className="rounded-lg px-3 py-2.5 text-sm font-normal"
-                        style={{ border: `1px solid ${errors.email ? '#9B2335' : B.line}`, background: '#fff', color: B.ink }}
-                      />
-                      {errors.email && <span id="book-email-err" className="text-xs font-normal" style={{ color: '#9B2335' }}>{errors.email}</span>}
-                    </label>
-                  </div>
-                  <label className="flex flex-col gap-1.5 text-sm font-medium mt-4">
+                  <label className="flex flex-col gap-1.5 text-sm font-medium">
                     {b.task} <span style={{ color: B.goldInk }}>*</span>
                     <textarea
                       id="book-task"
@@ -318,13 +357,40 @@ function Booking({
                       value={task}
                       placeholder={b.taskPlaceholder}
                       onChange={e => setTask(e.target.value)}
-                      aria-invalid={!!errors.task}
-                      aria-describedby={errors.task ? 'book-task-err' : undefined}
+                      aria-invalid={showError && invalid.task}
                       className="rounded-lg px-3 py-2.5 text-sm font-normal resize-y"
-                      style={{ border: `1px solid ${errors.task ? '#9B2335' : B.line}`, background: '#fff', color: B.ink }}
+                      style={{ border: `1px solid ${showError && invalid.task ? '#9B2335' : fieldBorder}`, background: '#fff', color: B.ink }}
                     />
-                    {errors.task && <span id="book-task-err" className="text-xs font-normal" style={{ color: '#9B2335' }}>{errors.task}</span>}
                   </label>
+                  <div className="grid sm:grid-cols-2 gap-4 mt-4">
+                    <label className="flex flex-col gap-1.5 text-sm font-medium">
+                      {b.name} <span style={{ color: B.goldInk }}>*</span>
+                      <input
+                        id="book-name"
+                        name="name"
+                        autoComplete="name"
+                        value={name}
+                        onChange={e => setName(e.target.value)}
+                        aria-invalid={showError && invalid.name}
+                        className="rounded-lg px-3 py-2.5 text-sm font-normal"
+                        style={{ border: `1px solid ${showError && invalid.name ? '#9B2335' : fieldBorder}`, background: '#fff', color: B.ink }}
+                      />
+                    </label>
+                    <label className="flex flex-col gap-1.5 text-sm font-medium">
+                      {b.email} <span style={{ color: B.goldInk }}>*</span>
+                      <input
+                        id="book-email"
+                        name="email"
+                        type="email"
+                        autoComplete="email"
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
+                        aria-invalid={showError && invalid.email}
+                        className="rounded-lg px-3 py-2.5 text-sm font-normal"
+                        style={{ border: `1px solid ${showError && invalid.email ? '#9B2335' : fieldBorder}`, background: '#fff', color: B.ink }}
+                      />
+                    </label>
+                  </div>
 
                   <div className="mt-4">
                     <div className="text-sm font-medium mb-2">{b.interest}</div>
@@ -341,7 +407,7 @@ function Booking({
                             style={{
                               background: on ? B.gold : '#fff',
                               color: B.ink,
-                              border: `1px solid ${on ? B.gold : B.line}`,
+                              border: `1px solid ${on ? B.gold : fieldBorder}`,
                             }}
                           >
                             {b.interests[id]}
@@ -351,18 +417,11 @@ function Booking({
                     </div>
                   </div>
 
-                  <div className="mt-4">
-                    <button
-                      type="button"
-                      className="text-sm font-semibold bg-transparent border-0 cursor-pointer p-0"
-                      style={{ color: B.goldInk }}
-                      aria-expanded={detailsOpen}
-                      aria-controls={detailsId}
-                      onClick={() => setDetailsOpen(v => !v)}
-                    >
-                      {b.detailsToggle} {detailsOpen ? '–' : '+'}
-                    </button>
-                    <div id={detailsId} hidden={!detailsOpen} className="mt-3 flex flex-col gap-4">
+                  <details className="mt-4">
+                    <summary className="text-sm font-semibold cursor-pointer" style={{ color: B.goldInk }}>
+                      {b.detailsToggle}
+                    </summary>
+                    <div className="mt-3 flex flex-col gap-4">
                       <label className="flex flex-col gap-1.5 text-sm font-medium">
                         {b.business}
                         <input
@@ -371,25 +430,25 @@ function Booking({
                           value={business}
                           onChange={e => setBusiness(e.target.value)}
                           className="rounded-lg px-3 py-2.5 text-sm font-normal"
-                          style={{ border: `1px solid ${B.line}`, background: '#fff', color: B.ink }}
+                          style={{ border: `1px solid ${fieldBorder}`, background: '#fff', color: B.ink }}
                         />
                       </label>
                       <div>
                         <div className="text-sm font-medium mb-2">{b.language}</div>
                         <div className="flex flex-wrap gap-2" role="group" aria-label={b.language}>
-                          {b.langs.map(label => {
-                            const on = callLang === label
+                          {b.langs.map((label, i) => {
+                            const on = langIdx === i
                             return (
                               <button
                                 key={label}
                                 type="button"
                                 aria-pressed={on}
-                                onClick={() => setCallLang(on ? '' : label)}
+                                onClick={() => setLangIdx(i)}
                                 className="text-xs font-semibold px-3 py-1.5 rounded-full cursor-pointer"
                                 style={{
                                   background: on ? B.gold : '#fff',
                                   color: B.ink,
-                                  border: `1px solid ${on ? B.gold : B.line}`,
+                                  border: `1px solid ${on ? B.gold : fieldBorder}`,
                                 }}
                               >
                                 {label}
@@ -399,8 +458,13 @@ function Booking({
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </details>
 
+                  {showError && (
+                    <p id="book-form-err" role="alert" className="text-xs font-medium mt-4 mb-0" style={{ color: '#9B2335' }}>
+                      {formError}
+                    </p>
+                  )}
                   <button
                     type="submit"
                     className="mt-5 w-full text-sm font-semibold px-5 py-3 rounded-lg cursor-pointer border-0"
@@ -434,7 +498,7 @@ export default function App() {
   const choose = (id: InterestId) => setInterest(id)
 
   useEffect(() => {
-    document.documentElement.lang = lang === 'zh' ? 'zh-Hant' : 'en'
+    document.documentElement.lang = lang === 'zh' ? 'zh-Hant-HK' : 'en'
     const existing = document.getElementById('faq-jsonld')
     const data = {
       '@context': 'https://schema.org',
@@ -738,30 +802,25 @@ export default function App() {
                 ))}
               </div>
             </div>
-            <div className="relative pb-8 min-w-0">
-              <div className="rounded-2xl p-6" style={{ background: '#fff', border: `1px solid ${B.line}` }}>
-                <img
-                  src="https://placehold.co/440x260/F4EFE4/1F3A5F?text=AI+Strategy+Session"
-                  alt={t.about.card.imgAlt}
-                  className="w-full rounded-xl mb-5 block"
-                />
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center" style={{ background: '#E7EEF5' }}>
-                    <LogoMark size={20} />
+            <div className="min-w-0">
+              <div className="rounded-2xl p-6 md:p-8" style={{ background: '#fff', border: `1px solid ${B.line}`, borderTop: `3px solid ${B.gold}` }}>
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="w-12 h-12 rounded-full flex-shrink-0 flex items-center justify-center" style={{ background: '#E7EEF5' }} aria-hidden="true">
+                    <LogoMark size={26} />
                   </div>
-                  <div className="min-w-0">
-                    <div className="text-sm font-semibold">{t.about.card.name}</div>
-                    <div className="text-xs" style={{ color: B.muted }}>{t.about.card.subtitle}</div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-base font-semibold">{t.about.card.name}</div>
+                    <div className="text-sm" style={{ color: B.muted }}>{t.about.card.subtitle}</div>
                   </div>
-                  <div className="ml-auto text-[0.68rem] font-semibold px-2.5 py-1 rounded-full whitespace-nowrap" style={{ background: 'rgba(200,162,74,0.12)', color: B.goldInk }}>
+                  <div className="text-[0.72rem] font-semibold px-2.5 py-1 rounded-full" style={{ background: 'rgba(200,162,74,0.12)', color: B.goldInk }}>
                     {t.about.card.available}
                   </div>
                 </div>
-              </div>
-              <div className="absolute bottom-0 left-4 rounded-xl px-4 py-3" style={{ background: '#fff', border: `1px solid rgba(138,100,24,0.35)` }}>
-                <div className="text-[0.63rem] uppercase tracking-[0.09em] mb-1" style={{ color: B.muted }}>{t.about.floatCard.label}</div>
-                <div className="font-mono text-[1.2rem] font-bold leading-none" style={{ color: B.goldInk }}>{t.about.floatCard.value}</div>
-                <div className="text-[0.7rem] mt-0.5" style={{ color: B.muted }}>{t.about.floatCard.desc}</div>
+                <div className="mt-6 rounded-xl px-4 py-4" style={{ background: '#F6F3EC', border: '1px solid rgba(138,100,24,0.35)' }}>
+                  <div className="text-[0.68rem] uppercase tracking-[0.09em] mb-1.5" style={{ color: B.muted }}>{t.about.floatCard.label}</div>
+                  <div className="font-mono text-[1.35rem] font-bold leading-none" style={{ color: B.goldInk }}>{t.about.floatCard.value}</div>
+                  <div className="text-sm mt-1.5" style={{ color: B.muted }}>{t.about.floatCard.desc}</div>
+                </div>
               </div>
             </div>
           </div>
