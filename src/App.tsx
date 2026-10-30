@@ -121,6 +121,67 @@ function DecorBackground() {
   )
 }
 
+function SnapRow({ className, label, children }: { className: string; label: string; children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [count, setCount] = useState(0)
+  const [index, setIndex] = useState(0)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const update = () => {
+      const kids = [...el.children] as HTMLElement[]
+      const box = el.getBoundingClientRect()
+      let best = 0
+      let bestDist = Infinity
+      kids.forEach((kid, i) => {
+        const dist = Math.abs(kid.getBoundingClientRect().left - box.left)
+        if (dist < bestDist) {
+          bestDist = dist
+          best = i
+        }
+      })
+      setCount(kids.length)
+      setIndex(best)
+    }
+    update()
+    el.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update)
+    return () => {
+      el.removeEventListener('scroll', update)
+      window.removeEventListener('resize', update)
+    }
+  }, [children])
+
+  const go = (i: number) => {
+    const el = ref.current
+    const kid = el?.children[i] as HTMLElement | undefined
+    if (!el || !kid) return
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const left = el.scrollLeft + (kid.getBoundingClientRect().left - el.getBoundingClientRect().left)
+    el.scrollTo({ left, behavior: reduce ? 'auto' : 'smooth' })
+  }
+
+  return (
+    <div>
+      <div ref={ref} className={className} aria-label={label}>{children}</div>
+      {count > 1 && (
+        <div className="swipe-dots" role="group" aria-label={label}>
+          {Array.from({ length: count }, (_, i) => (
+            <button
+              key={i}
+              type="button"
+              aria-current={i === index ? 'true' : undefined}
+              aria-label={`${i + 1} / ${count}`}
+              onClick={() => go(i)}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 const hkTime = () =>
   new Intl.DateTimeFormat('en-GB', {
     timeZone: 'Asia/Hong_Kong',
@@ -691,7 +752,7 @@ export default function App() {
                 <span className="text-[0.72rem] font-bold uppercase tracking-[0.14em]" style={{ color: B.goldInk }}>{t.startHere.kicker}</span>
                 <span className="text-sm font-semibold">{t.startHere.heading}</span>
               </div>
-              <div className="start-cards" aria-label={t.nav.offerings}>
+              <SnapRow className="start-cards" label={t.nav.offerings}>
                 {t.offerings.items.map((o, i) => {
                   const id: InterestId = i === 0 ? 'assistant' : 'receipts'
                   const accent = i === 0 ? B.blue : B.gold
@@ -733,7 +794,7 @@ export default function App() {
                     </article>
                   )
                 })}
-              </div>
+              </SnapRow>
               <p className="text-sm mt-4 mb-0" style={{ color: B.muted }}>
                 {t.startHere.unsureBefore}
                 <a href="#contact" onClick={() => choose('unsure')} className="font-semibold no-underline" style={{ color: B.goldInk }}>
@@ -808,7 +869,7 @@ export default function App() {
               {t.results.h2a}<br />
               <span style={{ color: B.goldInk }}>{t.results.h2b}</span>
             </h2>
-            <div className="swipe-row swipe-3">
+            <SnapRow className="swipe-row swipe-3" label={t.results.label}>
               {t.results.cases.map(({ metric, desc, detail, tag }) => (
                 <article key={metric} className="rounded-2xl p-6 flex flex-col gap-3" style={{ background: '#fff', border: `1px solid ${B.line}` }}>
                   <div className="font-mono text-[2.2rem] font-bold leading-none" style={{ color: B.goldInk }}>{metric}</div>
@@ -819,7 +880,7 @@ export default function App() {
                   </div>
                 </article>
               ))}
-            </div>
+            </SnapRow>
           </div>
         </section>
 

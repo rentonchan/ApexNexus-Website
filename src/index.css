@@ -232,6 +232,36 @@ html, body { overflow-x: clip; }
   scroll-snap-align: start;
   min-width: 0;
 }
+.swipe-dots {
+  display: none;
+  justify-content: center;
+  gap: 0.15rem;
+  margin-top: 0.65rem;
+}
+.swipe-dots button {
+  width: 2.25rem;
+  height: 1.75rem;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.swipe-dots button::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 99px;
+  border: 1.5px solid #1F3A5F;
+  background: transparent;
+}
+.swipe-dots button[aria-current="true"]::before {
+  background: #1F3A5F;
+}
+@media (max-width: 767px) {
+  .swipe-dots { display: flex; }
+}
 @media (min-width: 768px) {
   .swipe-row {
     display: grid;
