@@ -510,10 +510,33 @@ export default function App() {
   const [lang, setLang] = useState<Lang>('en')
   const [interest, setInterest] = useState<InterestId>('unsure')
   const [barOn, setBarOn] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
+  const menuFirstLinkRef = useRef<HTMLAnchorElement>(null)
   const t = T[lang]
 
   const toggleLang = () => setLang(l => l === 'en' ? 'zh' : 'en')
   const choose = (id: InterestId) => setInterest(id)
+  const closeMenu = (returnFocus = false) => {
+    setMenuOpen(false)
+    if (returnFocus) menuButtonRef.current?.focus()
+  }
+
+  useEffect(() => {
+    if (!menuOpen) return
+    menuFirstLinkRef.current?.focus()
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeMenu(true)
+    }
+    const desktop = window.matchMedia('(min-width: 768px)')
+    const onDesktop = () => { if (desktop.matches) setMenuOpen(false) }
+    window.addEventListener('keydown', onKey)
+    desktop.addEventListener('change', onDesktop)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      desktop.removeEventListener('change', onDesktop)
+    }
+  }, [menuOpen])
 
   useEffect(() => {
     document.documentElement.lang = lang === 'zh' ? 'zh-Hant-HK' : 'en'
@@ -567,20 +590,59 @@ export default function App() {
         <div className="max-w-[1160px] mx-auto px-4 md:px-8 h-16 flex items-center justify-between gap-3">
           <a href="#top" className="flex items-center gap-2.5 no-underline min-w-0" style={{ color: B.ink }}>
             <LogoMark size={28} />
-            <span className="font-bold text-[0.95rem] tracking-tight">Apex Nexus</span>
+            <span className="font-bold text-[0.95rem] tracking-tight whitespace-nowrap">Apex Nexus</span>
           </a>
-          <div className="flex items-center gap-3 md:gap-6">
+          <div className="flex items-center gap-2 md:gap-6">
             <a href="#offerings" className="hidden md:inline text-sm no-underline" style={{ color: B.muted }}>{t.nav.offerings}</a>
             <a href="#results" className="hidden md:inline text-sm no-underline" style={{ color: B.muted }}>{t.nav.results}</a>
             <a href="#how-it-works" className="hidden md:inline text-sm no-underline" style={{ color: B.muted }}>{t.nav.howItWorks}</a>
             <a href="#services" className="hidden md:inline text-sm no-underline" style={{ color: B.muted }}>{t.nav.services}</a>
             <a href="#about" className="hidden md:inline text-sm no-underline" style={{ color: B.muted }}>{t.nav.about}</a>
+            <button
+              ref={menuButtonRef}
+              type="button"
+              className="md:hidden inline-flex items-center justify-center rounded-lg cursor-pointer bg-transparent"
+              style={{ color: B.ink, border: `1px solid ${B.line}`, width: 36, height: 36 }}
+              aria-expanded={menuOpen}
+              aria-controls="site-menu"
+              aria-label={menuOpen ? t.nav.close : t.nav.menu}
+              onClick={() => setMenuOpen(v => !v)}
+            >
+              <span aria-hidden="true" className="text-lg leading-none">{menuOpen ? '×' : '☰'}</span>
+            </button>
             <LangToggle lang={lang} onToggle={toggleLang} label={t.a11y.lang} />
             <a href="#contact"
               className="text-xs font-semibold px-3 md:px-4 py-2 rounded-lg no-underline whitespace-nowrap"
               style={{ background: B.gold, color: B.ink }}>
               {t.nav.bookCall}
             </a>
+          </div>
+        </div>
+        <div
+          id="site-menu"
+          hidden={!menuOpen}
+          className="md:hidden absolute left-0 right-0 top-16 border-b"
+          style={{ background: '#F6F3EC', borderColor: B.line }}
+        >
+          <div className="max-w-[1160px] mx-auto px-4 py-2 flex flex-col">
+            {([
+              ['#offerings', t.nav.offerings],
+              ['#results', t.nav.results],
+              ['#how-it-works', t.nav.howItWorks],
+              ['#services', t.nav.services],
+              ['#about', t.nav.about],
+            ] as const).map(([href, label], i) => (
+              <a
+                key={href}
+                ref={i === 0 ? menuFirstLinkRef : undefined}
+                href={href}
+                className="no-underline text-base font-semibold py-3"
+                style={{ color: B.ink, borderBottom: i < 4 ? `1px solid ${B.line}` : undefined }}
+                onClick={() => setMenuOpen(false)}
+              >
+                {label}
+              </a>
+            ))}
           </div>
         </div>
       </nav>
