@@ -73,3 +73,15 @@ These rounds were committed straight to `main`. Each one is a single focused cha
 - Bain (bain.com) separates the story from the tools around it.
 
 **Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 99.
+
+## Round 37: Show the booking email when JavaScript is off
+
+**Change:** A noscript block, in English and 中文, tells a visitor without JavaScript to email hello@apexnexus.hk for the free 30-minute call. The words are the existing hero and booking lines.
+
+**Inspiration:**
+
+- The round-13 reference build already had a noscript line for this site. Apple Hong Kong (apple.com/hk) still states what the page is if the rich layout cannot run.
+- Cathay Pacific (cathaypacific.com) keeps a way to book when the interactive page is unavailable.
+- HSBC Hong Kong (hsbc.com.hk) always leaves a direct contact path.
+
+**Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 99.
