@@ -772,9 +772,23 @@ export default function App() {
                       {o.proof}
                     </p>
                   )}
-                  <div className="mt-auto text-[0.8rem] leading-relaxed" style={{ color: B.muted }}>
-                    <div><b style={{ color: B.ink }}>{t.offerings.bestFor}:</b> {o.bestFor}</div>
-                    <div><b style={{ color: B.ink }}>{t.offerings.launch}:</b> {o.launch}</div>
+                  <div className="mt-auto pt-4 grid grid-cols-2 gap-x-4 gap-y-3" style={{ borderTop: `1px solid ${B.line}` }}>
+                    <div>
+                      <div className="text-[0.68rem] font-semibold uppercase tracking-[0.08em] mb-1" style={{ color: B.goldInk }}>{t.offerings.launch}</div>
+                      <div className="text-sm font-semibold">{o.launch}</div>
+                    </div>
+                    <div>
+                      <div className="text-[0.68rem] font-semibold uppercase tracking-[0.08em] mb-1" style={{ color: B.goldInk }}>{t.offerings.bestFor}</div>
+                      <div className="text-sm leading-snug" style={{ color: B.muted }}>{o.bestFor}</div>
+                    </div>
+                    <a
+                      href="#contact"
+                      onClick={() => choose(i === 0 ? 'assistant' : 'receipts')}
+                      className="col-span-2 inline-flex items-center justify-center text-sm font-semibold px-4 py-2.5 rounded-lg no-underline"
+                      style={{ background: B.gold, color: B.ink }}
+                    >
+                      {t.startHere.book}
+                    </a>
                   </div>
                 </article>
               ))}
