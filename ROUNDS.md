@@ -121,3 +121,15 @@ These rounds were committed straight to `main`. Each one is a single focused cha
 - HSBC Hong Kong (hsbc.com.hk) pads the bottom of a phone screen for the system gesture area.
 
 **Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 99.
+
+## Round 41: Announce the language change
+
+**Change:** After someone chooses EN or 中文, a visually hidden live region says “Language: English” or 「語言：中文」. The buttons still show which one is pressed.
+
+**Inspiration:**
+
+- Apple Hong Kong (apple.com/hk) confirms the language you switched to, not only by repainting the page.
+- Cathay Pacific (cathaypacific.com/cx/zh_HK) treats the language choice as something a reader should hear as well as see.
+- HSBC Hong Kong (hsbc.com.hk/zh-hk) names the language in the control itself.
+
+**Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 99.

@@ -606,7 +606,12 @@ export default function App() {
   const menuFirstLinkRef = useRef<HTMLAnchorElement>(null)
   const t = T[lang]
 
+  const [langNote, setLangNote] = useState('')
   const choose = (id: InterestId) => setInterest(id)
+  const setLanguage = (next: Lang) => {
+    setLang(next)
+    setLangNote(next === 'zh' ? '語言：中文' : 'Language: English')
+  }
   const closeMenu = (returnFocus = false) => {
     setMenuOpen(false)
     if (returnFocus) menuButtonRef.current?.focus()
@@ -705,6 +710,7 @@ export default function App() {
   return (
     <div className={`min-h-screen font-sans${lang === 'zh' ? ' lang-zh' : ''}`} style={{ color: B.ink, paddingBottom: barOn ? '5.25rem' : undefined }}>
       <a href="#main" className="skip-link">{t.a11y.skip}</a>
+      <p className="book-live" aria-live="polite">{langNote}</p>
       <DecorBackground />
 
       <nav className="fixed top-0 left-0 right-0 z-50 border-b"
@@ -742,7 +748,7 @@ export default function App() {
             >
               <span aria-hidden="true" className="text-lg leading-none">{menuOpen ? '×' : '☰'}</span>
             </button>
-            <LangToggle lang={lang} onSet={setLang} label={t.a11y.lang} />
+            <LangToggle lang={lang} onSet={setLanguage} label={t.a11y.lang} />
             <a href="#contact"
               className="text-xs font-semibold px-3 md:px-4 py-2 rounded-lg no-underline whitespace-nowrap"
               style={{ background: B.gold, color: B.ink }}>
