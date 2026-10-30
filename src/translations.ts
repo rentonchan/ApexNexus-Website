@@ -257,6 +257,7 @@ export const T = {
     a11y: {
       skip: 'Skip to main content',
       lang: 'Toggle language',
+      newTab: 'opens in a new tab',
     },
     meta: {
       title: 'Apex Nexus — Connecting Strategy to Execution',
@@ -529,6 +530,7 @@ export const T = {
     a11y: {
       skip: '跳至主要內容',
       lang: '切換語言',
+      newTab: '在新分頁開啟',
     },
     meta: {
       title: 'Apex Nexus — 連結策略與執行',

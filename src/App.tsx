@@ -916,6 +916,7 @@ export default function App() {
               className="inline-flex items-center mt-8 text-sm font-semibold px-5 py-2.5 rounded-lg no-underline"
               style={{ background: 'rgba(200,162,74,0.12)', border: '1px solid rgba(138,100,24,0.35)', color: B.ink }}>
               {t.offerings.download}
+              <span className="ml-2 text-xs font-medium">({t.a11y.newTab})</span>
             </a>
           </div>
         </section>
