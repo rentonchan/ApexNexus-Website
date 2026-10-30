@@ -61,3 +61,15 @@ These rounds were committed straight to `main`. Each one is a single focused cha
 - IDEO (ideo.com) keeps a text link distinct from a button.
 
 **Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 99.
+
+## Round 36: Make a printed page readable
+
+**Change:** Printing hides the navigation, the animated background, the swipe dots, and the mobile booking bar, and prints the navy footer as navy ink on white. The screen layout is unchanged.
+
+**Inspiration:**
+
+- McKinsey (mckinsey.com) is written to be read, so a printout should be the words rather than the chrome.
+- Apple Hong Kong (apple.com/hk) keeps a printed page to the content, not the floating controls.
+- Bain (bain.com) separates the story from the tools around it.
+
+**Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 99.

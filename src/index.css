@@ -284,6 +284,28 @@ p a {
   html { scroll-behavior: auto; }
 }
 
+@media print {
+  .skip-link,
+  nav,
+  .swipe-dots,
+  canvas,
+  .fixed {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+    background-image: none !important;
+  }
+  .site-footer,
+  .site-footer a,
+  .site-footer p,
+  .site-footer span,
+  .site-footer div {
+    background: #fff !important;
+    color: #102039 !important;
+  }
+}
+
 .book-conf {
   display: flex;
   flex-direction: column;
