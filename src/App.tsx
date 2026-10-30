@@ -24,29 +24,33 @@ const CONTACT_TITLE = ''
 
 type InterestId = 'assistant' | 'receipts' | 'unsure'
 
-const LogoMark = ({ size = 30 }: { size?: number }) => (
+const LogoMark = ({ size = 30, light = false }: { size?: number; light?: boolean }) => {
+  const ink = light ? '#F6F3EC' : '#2F5D8C'
+  const node = light ? '#F6F3EC' : '#1F3A5F'
+  return (
   <svg width={size} height={size} viewBox="0 0 32 32" fill="none" aria-hidden="true">
-    <line x1="16" y1="5" x2="26.5" y2="12.5" stroke="#2F5D8C" strokeWidth="1.6" strokeOpacity="0.75"/>
-    <line x1="26.5" y1="12.5" x2="22.5" y2="25" stroke="#2F5D8C" strokeWidth="1.6" strokeOpacity="0.75"/>
-    <line x1="22.5" y1="25" x2="9.5" y2="25" stroke="#2F5D8C" strokeWidth="1.6" strokeOpacity="0.75"/>
-    <line x1="9.5" y1="25" x2="5.5" y2="12.5" stroke="#2F5D8C" strokeWidth="1.6" strokeOpacity="0.75"/>
-    <line x1="5.5" y1="12.5" x2="16" y2="5" stroke="#2F5D8C" strokeWidth="1.6" strokeOpacity="0.75"/>
+    <line x1="16" y1="5" x2="26.5" y2="12.5" stroke={ink} strokeWidth="1.6" strokeOpacity="0.9"/>
+    <line x1="26.5" y1="12.5" x2="22.5" y2="25" stroke={ink} strokeWidth="1.6" strokeOpacity="0.9"/>
+    <line x1="22.5" y1="25" x2="9.5" y2="25" stroke={ink} strokeWidth="1.6" strokeOpacity="0.9"/>
+    <line x1="9.5" y1="25" x2="5.5" y2="12.5" stroke={ink} strokeWidth="1.6" strokeOpacity="0.9"/>
+    <line x1="5.5" y1="12.5" x2="16" y2="5" stroke={ink} strokeWidth="1.6" strokeOpacity="0.9"/>
     <line x1="16" y1="5" x2="22.5" y2="25" stroke="#C8A24A" strokeWidth="1" strokeOpacity="0.55"/>
     <line x1="16" y1="5" x2="9.5" y2="25" stroke="#C8A24A" strokeWidth="1" strokeOpacity="0.55"/>
     <line x1="26.5" y1="12.5" x2="9.5" y2="25" stroke="#C8A24A" strokeWidth="1" strokeOpacity="0.55"/>
     <line x1="26.5" y1="12.5" x2="5.5" y2="12.5" stroke="#C8A24A" strokeWidth="1" strokeOpacity="0.55"/>
     <line x1="22.5" y1="25" x2="5.5" y2="12.5" stroke="#C8A24A" strokeWidth="1" strokeOpacity="0.55"/>
-    <circle cx="16" cy="5" r="2.5" fill="#2F5D8C"/>
-    <circle cx="26.5" cy="12.5" r="2.2" fill="#1F3A5F"/>
-    <circle cx="22.5" cy="25" r="2.2" fill="#1F3A5F"/>
-    <circle cx="9.5" cy="25" r="2.2" fill="#1F3A5F"/>
-    <circle cx="5.5" cy="12.5" r="2.2" fill="#2F5D8C"/>
-    <circle cx="16" cy="16" r="1.6" fill="rgba(47,93,140,0.45)"/>
+    <circle cx="16" cy="5" r="2.5" fill={ink}/>
+    <circle cx="26.5" cy="12.5" r="2.2" fill={node}/>
+    <circle cx="22.5" cy="25" r="2.2" fill={node}/>
+    <circle cx="9.5" cy="25" r="2.2" fill={node}/>
+    <circle cx="5.5" cy="12.5" r="2.2" fill={ink}/>
+    <circle cx="16" cy="16" r="1.6" fill={light ? 'rgba(246,243,236,0.55)' : 'rgba(47,93,140,0.45)'}/>
     <circle cx="22" cy="5.5" r="1.1" fill="#C8A24A"/>
     <circle cx="28.5" cy="19" r="1" fill="#C8A24A"/>
     <circle cx="7.5" cy="27.5" r="1" fill="#C8A24A"/>
   </svg>
-)
+  )
+}
 
 const LangToggle = ({ lang, onToggle, label }: { lang: Lang; onToggle: () => void; label: string }) => (
   <button
@@ -909,45 +913,45 @@ export default function App() {
         </section>
       </main>
 
-      <footer style={{ background: '#EFEAE0', borderTop: `1px solid ${B.line}` }}>
+      <footer className="site-footer" style={{ background: '#1F3A5F', color: '#F6F3EC', borderTop: '3px solid #C8A24A' }}>
         <div className="max-w-[1160px] mx-auto px-5 md:px-8 py-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
-            <a href="#top" className="flex items-center gap-2.5 no-underline mb-4" style={{ color: B.ink }}>
-              <LogoMark size={24} />
+            <a href="#top" className="flex items-center gap-2.5 no-underline mb-4" style={{ color: '#F6F3EC' }}>
+              <LogoMark size={24} light />
               <span className="text-sm font-bold">Apex Nexus</span>
             </a>
-            <p className="text-[0.8rem] leading-[1.7] m-0 whitespace-pre-line" style={{ color: B.muted }}>{t.footer.tagline}</p>
+            <p className="text-[0.8rem] leading-[1.7] m-0 whitespace-pre-line" style={{ color: '#E7EEF5' }}>{t.footer.tagline}</p>
           </div>
           <div>
-            <div className="text-[0.7rem] font-bold uppercase tracking-[0.1em] mb-4" style={{ color: B.goldInk }}>{t.footer.services.header}</div>
+            <div className="text-[0.7rem] font-bold uppercase tracking-[0.1em] mb-4" style={{ color: '#C8A24A' }}>{t.footer.services.header}</div>
             <div className="flex flex-col gap-2.5">
               {t.footer.services.links.map(item => (
-                <a key={item} href="#services" className="text-[0.82rem] no-underline" style={{ color: B.muted }}>{item}</a>
+                <a key={item} href="#services" className="text-[0.82rem] no-underline" style={{ color: '#F6F3EC' }}>{item}</a>
               ))}
             </div>
           </div>
           <div>
-            <div className="text-[0.7rem] font-bold uppercase tracking-[0.1em] mb-4" style={{ color: B.goldInk }}>{t.footer.company.header}</div>
+            <div className="text-[0.7rem] font-bold uppercase tracking-[0.1em] mb-4" style={{ color: '#C8A24A' }}>{t.footer.company.header}</div>
             <div className="flex flex-col gap-2.5">
               {t.footer.company.links.map((item, i) => (
-                <a key={item} href={['#how-it-works', '#results', '#about', '#contact'][i]} className="text-[0.82rem] no-underline" style={{ color: B.muted }}>{item}</a>
+                <a key={item} href={['#how-it-works', '#results', '#about', '#contact'][i]} className="text-[0.82rem] no-underline" style={{ color: '#F6F3EC' }}>{item}</a>
               ))}
             </div>
           </div>
           <div>
-            <div className="text-[0.7rem] font-bold uppercase tracking-[0.1em] mb-4" style={{ color: B.goldInk }}>{t.footer.contact.header}</div>
+            <div className="text-[0.7rem] font-bold uppercase tracking-[0.1em] mb-4" style={{ color: '#C8A24A' }}>{t.footer.contact.header}</div>
             <div className="flex flex-col gap-2.5">
-              <a href="mailto:hello@apexnexus.hk" className="text-[0.82rem] no-underline" style={{ color: B.muted }}>hello@apexnexus.hk</a>
-              <span className="text-[0.82rem]" style={{ color: B.muted }}>{lang === 'zh' ? '香港特別行政區' : 'Hong Kong SAR'}</span>
-              <a href="https://linkedin.com" className="text-[0.82rem] no-underline" style={{ color: B.muted }}>LinkedIn</a>
+              <a href="mailto:hello@apexnexus.hk" className="text-[0.82rem] no-underline" style={{ color: '#F6F3EC' }}>hello@apexnexus.hk</a>
+              <span className="text-[0.82rem]" style={{ color: '#E7EEF5' }}>{lang === 'zh' ? '香港特別行政區' : 'Hong Kong SAR'}</span>
+              <a href="https://linkedin.com" className="text-[0.82rem] no-underline" style={{ color: '#F6F3EC' }}>LinkedIn</a>
             </div>
           </div>
         </div>
-        <div className="max-w-[1160px] mx-auto px-5 md:px-8 py-5 flex items-center justify-between flex-wrap gap-4" style={{ borderTop: `1px solid ${B.line}` }}>
-          <span className="text-[0.75rem]" style={{ color: B.muted }}>{t.footer.copyright}</span>
+        <div className="max-w-[1160px] mx-auto px-5 md:px-8 py-5 flex items-center justify-between flex-wrap gap-4" style={{ borderTop: '1px solid rgba(246,243,236,0.22)' }}>
+          <span className="text-[0.75rem]" style={{ color: '#E7EEF5' }}>{t.footer.copyright}</span>
           <div className="flex gap-6">
-            <a href="#" className="text-[0.75rem] no-underline" style={{ color: B.muted }}>{t.footer.privacy}</a>
-            <a href="#" className="text-[0.75rem] no-underline" style={{ color: B.muted }}>{t.footer.terms}</a>
+            <a href="#" className="text-[0.75rem] no-underline" style={{ color: '#E7EEF5' }}>{t.footer.privacy}</a>
+            <a href="#" className="text-[0.75rem] no-underline" style={{ color: '#E7EEF5' }}>{t.footer.terms}</a>
           </div>
         </div>
       </footer>
