@@ -169,3 +169,15 @@ These rounds were committed straight to `main`. Each one is a single focused cha
 - Cathay Pacific (cathaypacific.com) does not hide an extra step behind a tiny line of type.
 
 **Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 99.
+
+## Round 45: Let a phone add the site to the home screen
+
+**Change:** A web manifest and a 180×180 icon, drawn from the existing logo on cream, so a phone can save Apex Nexus. The description is the existing line “Practical AI tools for Hong Kong SMEs.”
+
+**Inspiration:**
+
+- Apple Hong Kong (apple.com/hk) is built to be saved and reopened as itself.
+- Cathay Pacific (cathaypacific.com) has a home-screen identity, not only a browser tab.
+- HSBC Hong Kong (hsbc.com.hk) gives the phone an icon that is the brand mark.
+
+**Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 99.
