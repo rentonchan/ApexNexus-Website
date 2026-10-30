@@ -133,3 +133,15 @@ These rounds were committed straight to `main`. Each one is a single focused cha
 - HSBC Hong Kong (hsbc.com.hk/zh-hk) names the language in the control itself.
 
 **Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 99.
+
+## Round 42: Say which booking fields are required
+
+**Change:** Under the form heading, a line reads “Fields marked with * are required.” / 「標有 * 的欄位必須填寫。」 The stars were already on name, email, and the task.
+
+**Inspiration:**
+
+- HSBC Hong Kong (hsbc.com.hk) says up front which fields a form will not send without.
+- Cathay Pacific (cathaypacific.com) marks the booking fields that have to be filled.
+- Apple Hong Kong (apple.com/hk) does not leave a required mark unexplained.
+
+**Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 99.

@@ -455,7 +455,8 @@ function Booking({
                 </div>
               ) : (
                 <form onSubmit={onSubmit} noValidate aria-describedby={showError ? 'book-form-err' : undefined}>
-                  <h3 className="text-lg font-bold m-0 mb-4">{b.formTitle}</h3>
+                  <h3 className="text-lg font-bold m-0 mb-2">{b.formTitle}</h3>
+                  <p className="text-xs m-0 mb-4" style={{ color: B.muted }}>{t.a11y.required}</p>
                   <label className="flex flex-col gap-1.5 text-sm font-medium">
                     {b.task} <span style={{ color: B.goldInk }}>*</span>
                     <textarea
