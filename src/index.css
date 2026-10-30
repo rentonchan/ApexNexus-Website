@@ -101,6 +101,22 @@ html, body { overflow-x: clip; }
 .hero-line { display: block; }
 .hero-gold { color: #8A6418; }
 
+/* Traditional Chinese: a Hong Kong face, no Latin tightening, more open lines. */
+.lang-zh {
+  font-family: "PingFang HK", "PingFang TC", "Hiragino Sans CNS", "Noto Sans CJK TC", "Noto Sans TC", "Microsoft JhengHei", Inter, "Heiti TC", sans-serif;
+}
+.lang-zh .hero-title {
+  letter-spacing: 0;
+  line-height: 1.28;
+}
+.lang-zh .tracking-tight {
+  letter-spacing: 0;
+}
+.lang-zh p,
+.lang-zh li {
+  line-height: 1.85;
+}
+
 .hiw-track {
   list-style: none;
   margin: 0;
