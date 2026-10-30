@@ -181,3 +181,15 @@ These rounds were committed straight to `main`. Each one is a single focused cha
 - HSBC Hong Kong (hsbc.com.hk) gives the phone an icon that is the brand mark.
 
 **Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 99.
+
+## Round 46: Stop motion when the visitor asks for less
+
+**Change:** If the system setting “reduce motion” is on, transitions and CSS animations collapse to a single instant frame, and scrolling stays instant. The background already draws one still frame in that case.
+
+**Inspiration:**
+
+- Apple Hong Kong (apple.com/hk) honours the system motion setting rather than animating anyway.
+- McKinsey (mckinsey.com) does not require motion to read the page.
+- IDEO (ideo.com) treats motion as optional, not as the content.
+
+**Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 99.
