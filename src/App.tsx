@@ -987,8 +987,8 @@ export default function App() {
               {t.services.h2}
             </h2>
             <div className="grid md:grid-cols-2 gap-5">
-              {([t.services.ceo, t.services.ops] as const).map(card => (
-                <article key={card.h3} className="rounded-2xl p-6 md:p-8" style={{ background: '#fff', border: `1px solid ${B.line}` }}>
+              {([t.services.ceo, t.services.ops] as const).map((card, i) => (
+                <article key={card.h3} className="rounded-2xl p-6 md:p-8" style={{ background: '#fff', border: `1px solid ${B.line}`, borderTop: `3px solid ${i === 0 ? B.navy : B.gold}` }}>
                   <div className="inline-flex text-[0.75rem] font-semibold px-3 py-1 rounded-full mb-5" style={{ background: 'rgba(200,162,74,0.12)', color: B.goldInk }}>
                     {card.badge}
                   </div>
@@ -1004,6 +1004,13 @@ export default function App() {
                 </article>
               ))}
             </div>
+            <a
+              href="#contact"
+              className="inline-flex items-center mt-8 text-sm font-semibold px-5 py-3 rounded-lg no-underline"
+              style={{ background: B.gold, color: B.ink }}
+            >
+              {t.hiw.cta}
+            </a>
           </div>
         </section>
 
