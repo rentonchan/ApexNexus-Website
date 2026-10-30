@@ -4,26 +4,36 @@
 
 @layer base {
   :root {
-    --background: 222 47% 6%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 8%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 8%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 38 55% 55%;
-    --primary-foreground: 222 47% 6%;
-    --secondary: 217 50% 25%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 32% 17%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 217 32% 17%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 32% 17%;
-    --input: 217 32% 17%;
-    --ring: 38 55% 55%;
+    --background: 40 33% 95%;
+    --foreground: 216 56% 14%;
+    --card: 40 33% 99%;
+    --card-foreground: 216 56% 14%;
+    --popover: 40 33% 99%;
+    --popover-foreground: 216 56% 14%;
+    --primary: 40 48% 54%;
+    --primary-foreground: 216 56% 14%;
+    --secondary: 216 50% 25%;
+    --secondary-foreground: 40 33% 96%;
+    --muted: 40 20% 92%;
+    --muted-foreground: 215 22% 32%;
+    --accent: 40 20% 92%;
+    --accent-foreground: 216 56% 14%;
+    --destructive: 350 63% 38%;
+    --destructive-foreground: 40 33% 98%;
+    --border: 216 30% 86%;
+    --input: 216 30% 86%;
+    --ring: 40 48% 32%;
     --radius: 0.5rem;
+
+    --bg: #F6F3EC;
+    --bg-raised: #FFFcf8;
+    --ink: #102039;
+    --muted-ink: #3E4C63;
+    --line: rgba(16, 32, 57, 0.10);
+    --gold: #C8A24A;
+    --gold-ink: #8A6418;
+    --navy: #1F3A5F;
+    --blue: #2F5D8C;
   }
 }
 
@@ -34,29 +44,103 @@
 
 html {
   scroll-behavior: smooth;
+  color-scheme: light;
 }
 
 body {
-  background-color: transparent;
-  color: white;
+  background-color: var(--bg);
+  color: var(--ink);
   margin: 0;
 }
 
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: #060d1b; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #F6F3EC; }
 ::-webkit-scrollbar-thumb { background: #1F3A5F; border-radius: 3px; }
 
-/* Grain texture overlay */
-.grain::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.03;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 200px 200px;
+html, body { overflow-x: clip; }
+
+[hidden] { display: none !important; }
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -3rem;
+  z-index: 80;
+  padding: 0.5rem 0.85rem;
+  border-radius: 0.5rem;
+  background: #102039;
+  color: #F6F3EC;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.skip-link:focus {
+  top: 0.75rem;
 }
 
-/* No sideways scrolling on phones */
-html, body { overflow-x: clip; }
+:focus-visible {
+  outline: 2px solid #8A6418;
+  outline-offset: 2px;
+}
+
+.section-pad {
+  padding: 4.25rem 1.25rem;
+  scroll-margin-top: 5rem;
+}
+@media (min-width: 768px) {
+  .section-pad {
+    padding: 5.5rem 2rem;
+  }
+}
+
+.start-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+@media (max-width: 767px) {
+  .start-cards {
+    flex-direction: row;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 0.25rem;
+  }
+  .start-cards::-webkit-scrollbar { display: none; }
+  .start-cards > * {
+    flex: 0 0 86%;
+    scroll-snap-align: start;
+    min-width: 0;
+  }
+}
+
+.swipe-row {
+  display: flex;
+  gap: 0.85rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 0.25rem;
+}
+.swipe-row::-webkit-scrollbar { display: none; }
+.swipe-row > * {
+  flex: 0 0 86%;
+  scroll-snap-align: start;
+  min-width: 0;
+}
+@media (min-width: 768px) {
+  .swipe-row {
+    display: grid;
+    overflow: visible;
+    gap: 1.5rem;
+  }
+  .swipe-row > * { flex: none; }
+  .swipe-2 { grid-template-columns: 1fr 1fr; }
+  .swipe-3 { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}

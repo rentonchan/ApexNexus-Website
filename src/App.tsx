@@ -1,76 +1,69 @@
-import { useState } from 'react'
+import { useEffect, useId, useState, type FormEvent, type ReactNode } from 'react'
 import ShaderBackground from '@/components/ui/shader-background'
 import { T, type Lang } from './translations'
 
-// Brand palette — Navy / Blue / Gold (per brand guidelines)
 const B = {
-  gold:    '#C8A24A',
-  goldHov: '#b08838',
-  goldLt:  '#d4b267',
-  navy:    '#1F3A5F',
-  blue:    '#2F5D8C',
-
-  gold08:  'rgba(200,162,74,0.08)',
-  gold12:  'rgba(200,162,74,0.12)',
-  gold20:  'rgba(200,162,74,0.20)',
-  goldB20: 'rgba(200,162,74,0.20)',
-  goldB35: 'rgba(200,162,74,0.35)',
-  goldB50: 'rgba(200,162,74,0.50)',
-  goldSh:  '0 2px 20px rgba(200,162,74,0.28)',
-
-  blueB20: 'rgba(47,93,140,0.20)',
-  blueB30: 'rgba(47,93,140,0.30)',
-  blueB45: 'rgba(47,93,140,0.45)',
-  blue08:  'rgba(47,93,140,0.08)',
-  blue12:  'rgba(47,93,140,0.12)',
+  gold: '#C8A24A',
+  goldInk: '#8A6418',
+  ink: '#102039',
+  muted: '#3E4C63',
+  line: 'rgba(16,32,57,0.12)',
+  card: '#FFFcf8',
+  navy: '#1F3A5F',
+  blue: '#2F5D8C',
 }
 
-// Logo mark — pentagon network graph matching brand identity
+/**
+ * TODO: put the real contact name and title here, then set this to true.
+ * The round-1 card used bracket placeholders; those must not ship.
+ */
+const SHOW_CONTACT_CARD = false
+const CONTACT_NAME = ''
+const CONTACT_TITLE = ''
+
+type InterestId = 'assistant' | 'receipts' | 'unsure'
+
 const LogoMark = ({ size = 30 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
-    <line x1="16"   y1="5"    x2="26.5" y2="12.5" stroke="#2F5D8C" strokeWidth="1.6" strokeOpacity="0.75"/>
-    <line x1="26.5" y1="12.5" x2="22.5" y2="25"   stroke="#2F5D8C" strokeWidth="1.6" strokeOpacity="0.75"/>
-    <line x1="22.5" y1="25"   x2="9.5"  y2="25"   stroke="#2F5D8C" strokeWidth="1.6" strokeOpacity="0.75"/>
-    <line x1="9.5"  y1="25"   x2="5.5"  y2="12.5" stroke="#2F5D8C" strokeWidth="1.6" strokeOpacity="0.75"/>
-    <line x1="5.5"  y1="12.5" x2="16"   y2="5"    stroke="#2F5D8C" strokeWidth="1.6" strokeOpacity="0.75"/>
-    <line x1="16"   y1="5"    x2="22.5" y2="25"   stroke="#C8A24A" strokeWidth="1"   strokeOpacity="0.40"/>
-    <line x1="16"   y1="5"    x2="9.5"  y2="25"   stroke="#C8A24A" strokeWidth="1"   strokeOpacity="0.40"/>
-    <line x1="26.5" y1="12.5" x2="9.5"  y2="25"   stroke="#C8A24A" strokeWidth="1"   strokeOpacity="0.40"/>
-    <line x1="26.5" y1="12.5" x2="5.5"  y2="12.5" stroke="#C8A24A" strokeWidth="1"   strokeOpacity="0.40"/>
-    <line x1="22.5" y1="25"   x2="5.5"  y2="12.5" stroke="#C8A24A" strokeWidth="1"   strokeOpacity="0.40"/>
-    <circle cx="16"   cy="5"    r="2.5" fill="#2F5D8C"/>
+  <svg width={size} height={size} viewBox="0 0 32 32" fill="none" aria-hidden="true">
+    <line x1="16" y1="5" x2="26.5" y2="12.5" stroke="#2F5D8C" strokeWidth="1.6" strokeOpacity="0.75"/>
+    <line x1="26.5" y1="12.5" x2="22.5" y2="25" stroke="#2F5D8C" strokeWidth="1.6" strokeOpacity="0.75"/>
+    <line x1="22.5" y1="25" x2="9.5" y2="25" stroke="#2F5D8C" strokeWidth="1.6" strokeOpacity="0.75"/>
+    <line x1="9.5" y1="25" x2="5.5" y2="12.5" stroke="#2F5D8C" strokeWidth="1.6" strokeOpacity="0.75"/>
+    <line x1="5.5" y1="12.5" x2="16" y2="5" stroke="#2F5D8C" strokeWidth="1.6" strokeOpacity="0.75"/>
+    <line x1="16" y1="5" x2="22.5" y2="25" stroke="#C8A24A" strokeWidth="1" strokeOpacity="0.55"/>
+    <line x1="16" y1="5" x2="9.5" y2="25" stroke="#C8A24A" strokeWidth="1" strokeOpacity="0.55"/>
+    <line x1="26.5" y1="12.5" x2="9.5" y2="25" stroke="#C8A24A" strokeWidth="1" strokeOpacity="0.55"/>
+    <line x1="26.5" y1="12.5" x2="5.5" y2="12.5" stroke="#C8A24A" strokeWidth="1" strokeOpacity="0.55"/>
+    <line x1="22.5" y1="25" x2="5.5" y2="12.5" stroke="#C8A24A" strokeWidth="1" strokeOpacity="0.55"/>
+    <circle cx="16" cy="5" r="2.5" fill="#2F5D8C"/>
     <circle cx="26.5" cy="12.5" r="2.2" fill="#1F3A5F"/>
-    <circle cx="22.5" cy="25"   r="2.2" fill="#1F3A5F"/>
-    <circle cx="9.5"  cy="25"   r="2.2" fill="#1F3A5F"/>
-    <circle cx="5.5"  cy="12.5" r="2.2" fill="#2F5D8C"/>
-    <circle cx="16"   cy="16"   r="1.6" fill="rgba(47,93,140,0.45)"/>
-    <circle cx="22"   cy="5.5"  r="1.1" fill="#C8A24A"/>
-    <circle cx="28.5" cy="19"   r="1"   fill="#C8A24A"/>
-    <circle cx="7.5"  cy="27.5" r="1"   fill="#C8A24A"/>
+    <circle cx="22.5" cy="25" r="2.2" fill="#1F3A5F"/>
+    <circle cx="9.5" cy="25" r="2.2" fill="#1F3A5F"/>
+    <circle cx="5.5" cy="12.5" r="2.2" fill="#2F5D8C"/>
+    <circle cx="16" cy="16" r="1.6" fill="rgba(47,93,140,0.45)"/>
+    <circle cx="22" cy="5.5" r="1.1" fill="#C8A24A"/>
+    <circle cx="28.5" cy="19" r="1" fill="#C8A24A"/>
+    <circle cx="7.5" cy="27.5" r="1" fill="#C8A24A"/>
   </svg>
 )
 
-const LangToggle = ({ lang, onToggle }: { lang: Lang; onToggle: () => void }) => (
+const LangToggle = ({ lang, onToggle, label }: { lang: Lang; onToggle: () => void; label: string }) => (
   <button
+    type="button"
     onClick={onToggle}
     className="relative flex items-center rounded-full text-[0.72rem] font-semibold cursor-pointer select-none"
-    style={{
-      background: 'rgba(255,255,255,0.06)',
-      border: `1px solid ${B.blueB30}`,
-      padding: '3px',
-      gap: 0,
-    }}
-    aria-label="Toggle language"
+    style={{ background: '#fff', border: `1px solid ${B.line}`, padding: '3px' }}
+    aria-label={label}
   >
     {(['en', 'zh'] as Lang[]).map(l => (
       <span
         key={l}
         className="relative z-10 px-2.5 py-1 rounded-full transition-colors duration-200"
         style={{
-          background:  lang === l ? B.gold : 'transparent',
-          color:       lang === l ? '#0a0f1e' : 'rgba(255,255,255,0.45)',
-          fontWeight:  lang === l ? 700 : 500,
-          lineHeight:  1,
+          background: lang === l ? B.gold : 'transparent',
+          color: lang === l ? B.ink : B.muted,
+          fontWeight: lang === l ? 700 : 500,
+          lineHeight: 1,
         }}
       >
         {l === 'en' ? 'EN' : '中文'}
@@ -79,506 +72,758 @@ const LangToggle = ({ lang, onToggle }: { lang: Lang; onToggle: () => void }) =>
   </button>
 )
 
-const Divider = () => (
-  <div className="max-w-[1160px] mx-auto h-px"
-    style={{ background: 'linear-gradient(to right, transparent, rgba(47,93,140,0.30), transparent)' }} />
+const Eyebrow = ({ children }: { children: ReactNode }) => (
+  <span className="block text-[0.72rem] font-bold uppercase tracking-[0.14em] mb-3" style={{ color: B.goldInk }}>
+    {children}
+  </span>
 )
 
-const GoldDivider = () => (
-  <div className="max-w-[1160px] mx-auto h-px"
-    style={{ background: 'linear-gradient(to right, transparent, rgba(200,162,74,0.35), transparent)' }} />
+const PrimaryLink = ({ href, children, onClick }: { href: string; children: ReactNode; onClick?: () => void }) => (
+  <a
+    href={href}
+    onClick={onClick}
+    className="inline-flex items-center justify-center text-sm font-semibold px-5 py-3 rounded-lg no-underline transition-colors duration-150"
+    style={{ background: B.gold, color: B.ink }}
+  >
+    {children}
+  </a>
 )
+
+const GhostLink = ({ href, children }: { href: string; children: ReactNode }) => (
+  <a
+    href={href}
+    className="inline-flex items-center justify-center text-sm font-semibold px-5 py-3 rounded-lg no-underline transition-colors duration-150"
+    style={{ background: '#fff', color: B.ink, border: `1px solid ${B.line}` }}
+  >
+    {children}
+  </a>
+)
+
+const hkTime = () =>
+  new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Hong_Kong',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(new Date())
+
+function ContactCard({ note, hours }: { note: string; hours: string }) {
+  const who = [CONTACT_NAME, CONTACT_TITLE].filter(Boolean).join(' · ')
+  return (
+    <div className="rounded-2xl p-4 flex gap-3 items-start" style={{ background: B.card, border: `1px solid ${B.line}` }}>
+      <div
+        className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 font-semibold"
+        style={{ background: '#E7EEF5', color: B.navy }}
+        aria-hidden="true"
+      >
+        ?
+      </div>
+      <div className="min-w-0">
+        {who && <div className="text-sm font-semibold">{who}</div>}
+        <div className="text-xs mt-0.5" style={{ color: B.muted }}>{hours} {hkTime()}</div>
+        <div className="text-xs mt-1" style={{ color: B.muted }}>{note}</div>
+      </div>
+    </div>
+  )
+}
+
+function FaqList({ items, label }: { label: string; items: readonly { q: string; a: string }[] }) {
+  const [open, setOpen] = useState<Record<number, boolean>>({})
+  const base = useId()
+  return (
+    <div>
+      <h3 className="text-base font-bold m-0 mb-3">{label}</h3>
+      <div className="flex flex-col" style={{ borderTop: `1px solid ${B.line}` }}>
+        {items.map((item, i) => {
+          const expanded = !!open[i]
+          const panelId = `${base}-faq-${i}`
+          return (
+            <div key={item.q} style={{ borderBottom: `1px solid ${B.line}` }}>
+              <button
+                type="button"
+                className="w-full text-left bg-transparent border-0 cursor-pointer flex items-start justify-between gap-4 py-3.5 px-0"
+                style={{ color: B.ink, font: 'inherit' }}
+                aria-expanded={expanded}
+                aria-controls={panelId}
+                onClick={() => setOpen(s => ({ ...s, [i]: !s[i] }))}
+              >
+                <span className="text-sm font-semibold leading-snug">{item.q}</span>
+                <span aria-hidden="true" className="font-mono text-lg leading-none" style={{ color: B.goldInk }}>
+                  {expanded ? '–' : '+'}
+                </span>
+              </button>
+              <div id={panelId} role="region" hidden={!expanded}>
+                <p className="text-sm leading-[1.7] m-0 pb-3.5" style={{ color: B.muted }}>{item.a}</p>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function Booking({
+  t,
+  interest,
+  setInterest,
+}: {
+  t: (typeof T)[Lang]
+  interest: InterestId
+  setInterest: (id: InterestId) => void
+}) {
+  const b = t.booking
+  const [name, setName] = useState('')
+  const [business, setBusiness] = useState('')
+  const [email, setEmail] = useState('')
+  const [task, setTask] = useState('')
+  const [callLang, setCallLang] = useState('')
+  const [detailsOpen, setDetailsOpen] = useState(false)
+  const [errors, setErrors] = useState<{ name?: string; email?: string; task?: string }>({})
+  const [submitted, setSubmitted] = useState(false)
+  const detailsId = useId()
+
+  useEffect(() => {
+    setSubmitted(false)
+  }, [interest])
+
+  const onSubmit = (e: FormEvent) => {
+    e.preventDefault()
+    const next: typeof errors = {}
+    if (!name.trim()) next.name = b.errors.name
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) next.email = b.errors.email
+    if (!task.trim()) next.task = b.errors.task
+    setErrors(next)
+    if (Object.keys(next).length) {
+      const first = next.name ? 'book-name' : next.email ? 'book-email' : 'book-task'
+      document.getElementById(first)?.focus()
+      return
+    }
+    const lines = [
+      `${b.name}: ${name.trim()}`,
+      business.trim() ? `${b.business}: ${business.trim()}` : '',
+      `${b.email}: ${email.trim()}`,
+      `${b.task}: ${task.trim()}`,
+      callLang ? `${b.language}: ${callLang}` : '',
+      `${b.interest}: ${b.interests[interest]}`,
+    ].filter(Boolean)
+    const href = `mailto:hello@apexnexus.hk?subject=${encodeURIComponent(b.subject)}&body=${encodeURIComponent(lines.join('\n'))}`
+    const a = document.createElement('a')
+    a.href = href
+    a.rel = 'nofollow'
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    setSubmitted(true)
+  }
+
+  return (
+    <section id="contact" className="section-pad" style={{ background: '#F3EFE6' }}>
+      <div className="max-w-[1160px] mx-auto">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-start">
+          <div>
+            <div
+              className="inline-flex items-center text-[0.76rem] font-semibold px-3.5 py-1.5 rounded-full mb-4"
+              style={{ background: 'rgba(200,162,74,0.12)', border: '1px solid rgba(138,100,24,0.35)', color: B.goldInk }}
+            >
+              {t.cta.badge}
+            </div>
+            <h2 className="text-[clamp(1.8rem,4vw,2.7rem)] font-extrabold tracking-tight leading-[1.12] m-0">
+              {b.h2}
+            </h2>
+            <p className="text-[0.98rem] leading-[1.75] mt-4 mb-6" style={{ color: B.muted }}>{b.intro}</p>
+            <div className="text-[0.72rem] font-bold uppercase tracking-[0.14em] mb-3" style={{ color: B.goldInk }}>
+              {b.nextLabel}
+            </div>
+            <ol className="list-none p-0 m-0 flex flex-col gap-4">
+              {b.steps.map((step, i) => (
+                <li key={step.title} className="flex gap-3">
+                  <span className="font-mono text-sm font-semibold mt-0.5" style={{ color: B.goldInk }}>
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <div>
+                    <div className="text-sm font-semibold">{step.title}</div>
+                    <p className="text-sm leading-[1.65] m-0 mt-0.5" style={{ color: B.muted }}>{step.desc}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+            {SHOW_CONTACT_CARD && (
+              <div className="mt-6">
+                <ContactCard note={b.contactNote} hours={b.contactHours} />
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-8">
+            <div className="rounded-2xl p-6 md:p-7" style={{ background: B.card, border: `1px solid ${B.line}`, boxShadow: '0 10px 40px rgba(16,32,57,0.05)' }}>
+              {submitted ? (
+                <div role="status" aria-live="polite">
+                  <h3 className="text-xl font-bold m-0 mb-3">{b.confirmTitle}</h3>
+                  <p className="text-sm leading-[1.7] m-0" style={{ color: B.muted }}>{b.confirmBody}</p>
+                  <p className="text-sm mt-3 mb-5">
+                    <a href="mailto:hello@apexnexus.hk" style={{ color: B.goldInk }}>hello@apexnexus.hk</a>
+                  </p>
+                  <button
+                    type="button"
+                    className="text-sm font-semibold px-5 py-3 rounded-lg cursor-pointer border-0"
+                    style={{ background: B.gold, color: B.ink }}
+                    onClick={() => setSubmitted(false)}
+                  >
+                    {b.confirmBack}
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={onSubmit} noValidate>
+                  <h3 className="text-lg font-bold m-0 mb-4">{b.formTitle}</h3>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <label className="flex flex-col gap-1.5 text-sm font-medium">
+                      {b.name} <span style={{ color: B.goldInk }}>*</span>
+                      <input
+                        id="book-name"
+                        name="name"
+                        autoComplete="name"
+                        value={name}
+                        onChange={e => setName(e.target.value)}
+                        aria-invalid={!!errors.name}
+                        aria-describedby={errors.name ? 'book-name-err' : undefined}
+                        className="rounded-lg px-3 py-2.5 text-sm font-normal"
+                        style={{ border: `1px solid ${errors.name ? '#9B2335' : B.line}`, background: '#fff', color: B.ink }}
+                      />
+                      {errors.name && <span id="book-name-err" className="text-xs font-normal" style={{ color: '#9B2335' }}>{errors.name}</span>}
+                    </label>
+                    <label className="flex flex-col gap-1.5 text-sm font-medium sm:col-span-1">
+                      {b.email} <span style={{ color: B.goldInk }}>*</span>
+                      <input
+                        id="book-email"
+                        name="email"
+                        type="email"
+                        autoComplete="email"
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
+                        aria-invalid={!!errors.email}
+                        aria-describedby={errors.email ? 'book-email-err' : undefined}
+                        className="rounded-lg px-3 py-2.5 text-sm font-normal"
+                        style={{ border: `1px solid ${errors.email ? '#9B2335' : B.line}`, background: '#fff', color: B.ink }}
+                      />
+                      {errors.email && <span id="book-email-err" className="text-xs font-normal" style={{ color: '#9B2335' }}>{errors.email}</span>}
+                    </label>
+                  </div>
+                  <label className="flex flex-col gap-1.5 text-sm font-medium mt-4">
+                    {b.task} <span style={{ color: B.goldInk }}>*</span>
+                    <textarea
+                      id="book-task"
+                      name="task"
+                      rows={3}
+                      value={task}
+                      placeholder={b.taskPlaceholder}
+                      onChange={e => setTask(e.target.value)}
+                      aria-invalid={!!errors.task}
+                      aria-describedby={errors.task ? 'book-task-err' : undefined}
+                      className="rounded-lg px-3 py-2.5 text-sm font-normal resize-y"
+                      style={{ border: `1px solid ${errors.task ? '#9B2335' : B.line}`, background: '#fff', color: B.ink }}
+                    />
+                    {errors.task && <span id="book-task-err" className="text-xs font-normal" style={{ color: '#9B2335' }}>{errors.task}</span>}
+                  </label>
+
+                  <div className="mt-4">
+                    <div className="text-sm font-medium mb-2">{b.interest}</div>
+                    <div className="flex flex-wrap gap-2" role="group" aria-label={b.interest}>
+                      {(Object.keys(b.interests) as InterestId[]).map(id => {
+                        const on = interest === id
+                        return (
+                          <button
+                            key={id}
+                            type="button"
+                            aria-pressed={on}
+                            onClick={() => setInterest(id)}
+                            className="text-xs font-semibold px-3 py-1.5 rounded-full cursor-pointer"
+                            style={{
+                              background: on ? B.gold : '#fff',
+                              color: B.ink,
+                              border: `1px solid ${on ? B.gold : B.line}`,
+                            }}
+                          >
+                            {b.interests[id]}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <button
+                      type="button"
+                      className="text-sm font-semibold bg-transparent border-0 cursor-pointer p-0"
+                      style={{ color: B.goldInk }}
+                      aria-expanded={detailsOpen}
+                      aria-controls={detailsId}
+                      onClick={() => setDetailsOpen(v => !v)}
+                    >
+                      {b.detailsToggle} {detailsOpen ? '–' : '+'}
+                    </button>
+                    <div id={detailsId} hidden={!detailsOpen} className="mt-3 flex flex-col gap-4">
+                      <label className="flex flex-col gap-1.5 text-sm font-medium">
+                        {b.business}
+                        <input
+                          name="organization"
+                          autoComplete="organization"
+                          value={business}
+                          onChange={e => setBusiness(e.target.value)}
+                          className="rounded-lg px-3 py-2.5 text-sm font-normal"
+                          style={{ border: `1px solid ${B.line}`, background: '#fff', color: B.ink }}
+                        />
+                      </label>
+                      <div>
+                        <div className="text-sm font-medium mb-2">{b.language}</div>
+                        <div className="flex flex-wrap gap-2" role="group" aria-label={b.language}>
+                          {b.langs.map(label => {
+                            const on = callLang === label
+                            return (
+                              <button
+                                key={label}
+                                type="button"
+                                aria-pressed={on}
+                                onClick={() => setCallLang(on ? '' : label)}
+                                className="text-xs font-semibold px-3 py-1.5 rounded-full cursor-pointer"
+                                style={{
+                                  background: on ? B.gold : '#fff',
+                                  color: B.ink,
+                                  border: `1px solid ${on ? B.gold : B.line}`,
+                                }}
+                              >
+                                {label}
+                              </button>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="mt-5 w-full text-sm font-semibold px-5 py-3 rounded-lg cursor-pointer border-0"
+                    style={{ background: B.gold, color: B.ink }}
+                  >
+                    {b.submit}
+                  </button>
+                  <p className="text-xs leading-[1.6] mt-3 mb-1" style={{ color: B.muted }}>{b.hint}</p>
+                  <p className="text-xs m-0" style={{ color: B.muted }}>
+                    {b.prefer}{' '}
+                    <a href="mailto:hello@apexnexus.hk" style={{ color: B.goldInk }}>hello@apexnexus.hk</a>
+                  </p>
+                </form>
+              )}
+            </div>
+            <FaqList label={t.faq.label} items={t.faq.items} />
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
 
 export default function App() {
   const [lang, setLang] = useState<Lang>('en')
+  const [interest, setInterest] = useState<InterestId>('unsure')
+  const [barOn, setBarOn] = useState(false)
   const t = T[lang]
 
   const toggleLang = () => setLang(l => l === 'en' ? 'zh' : 'en')
+  const choose = (id: InterestId) => setInterest(id)
+
+  useEffect(() => {
+    document.documentElement.lang = lang === 'zh' ? 'zh-Hant' : 'en'
+    const existing = document.getElementById('faq-jsonld')
+    const data = {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: t.faq.items.map(item => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: { '@type': 'Answer', text: item.a },
+      })),
+    }
+    const script = existing ?? document.createElement('script')
+    script.id = 'faq-jsonld'
+    script.setAttribute('type', 'application/ld+json')
+    script.textContent = JSON.stringify(data)
+    if (!existing) document.head.appendChild(script)
+  }, [lang, t.faq.items])
+
+  useEffect(() => {
+    const hero = document.getElementById('top')
+    const contact = document.getElementById('contact')
+    if (!hero || !contact) return
+    const update = () => {
+      const mobile = window.matchMedia('(max-width: 767px)').matches
+      const heroBottom = hero.getBoundingClientRect().bottom
+      const contactRect = contact.getBoundingClientRect()
+      const pastHero = heroBottom < 160
+      const contactInView = contactRect.top < window.innerHeight * 0.55 && contactRect.bottom > 80
+      setBarOn(mobile && pastHero && !contactInView)
+    }
+    update()
+    window.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update)
+    return () => {
+      window.removeEventListener('scroll', update)
+      window.removeEventListener('resize', update)
+    }
+  }, [])
+
+  const receiptProof = `${t.results.cases[1].metric} ${t.results.cases[1].desc}`
 
   return (
-    <div className="grain min-h-screen text-white font-sans">
+    <div className="min-h-screen font-sans" style={{ color: B.ink, paddingBottom: barOn ? '5.25rem' : undefined }}>
+      <a href="#main" className="skip-link">{t.a11y.skip}</a>
+      <ShaderBackground />
 
-      {/* ── NAV ──────────────────────────────────────────────────────────── */}
       <nav className="fixed top-0 left-0 right-0 z-50 border-b"
-        style={{ background: 'rgba(5,9,20,0.85)', backdropFilter: 'blur(16px) saturate(1.5)', borderColor: B.blueB30 }}>
-        <div className="max-w-[1160px] mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
-          <a href="#" className="flex items-center gap-2.5 no-underline">
+        style={{ background: 'rgba(246,243,236,0.9)', backdropFilter: 'blur(16px)', borderColor: B.line }}>
+        <div className="max-w-[1160px] mx-auto px-4 md:px-8 h-16 flex items-center justify-between gap-3">
+          <a href="#top" className="flex items-center gap-2.5 no-underline min-w-0" style={{ color: B.ink }}>
             <LogoMark size={28} />
-            <span className="font-bold text-[0.95rem] tracking-tight text-white">Apex Nexus</span>
+            <span className="font-bold text-[0.95rem] tracking-tight">Apex Nexus</span>
           </a>
           <div className="flex items-center gap-3 md:gap-6">
-            <a href="#how-it-works" className="hidden md:inline text-sm text-white/55 hover:text-white transition-colors duration-150 no-underline">{t.nav.howItWorks}</a>
-            <a href="#services"     className="hidden md:inline text-sm text-white/55 hover:text-white transition-colors duration-150 no-underline">{t.nav.services}</a>
-            <a href="#offerings"    className="hidden md:inline text-sm text-white/55 hover:text-white transition-colors duration-150 no-underline">{t.nav.offerings}</a>
-            <a href="#results"      className="hidden md:inline text-sm text-white/55 hover:text-white transition-colors duration-150 no-underline">{t.nav.results}</a>
-            <a href="#about"        className="hidden md:inline text-sm text-white/55 hover:text-white transition-colors duration-150 no-underline">{t.nav.about}</a>
-            <LangToggle lang={lang} onToggle={toggleLang} />
+            <a href="#offerings" className="hidden md:inline text-sm no-underline" style={{ color: B.muted }}>{t.nav.offerings}</a>
+            <a href="#results" className="hidden md:inline text-sm no-underline" style={{ color: B.muted }}>{t.nav.results}</a>
+            <a href="#how-it-works" className="hidden md:inline text-sm no-underline" style={{ color: B.muted }}>{t.nav.howItWorks}</a>
+            <a href="#services" className="hidden md:inline text-sm no-underline" style={{ color: B.muted }}>{t.nav.services}</a>
+            <a href="#about" className="hidden md:inline text-sm no-underline" style={{ color: B.muted }}>{t.nav.about}</a>
+            <LangToggle lang={lang} onToggle={toggleLang} label={t.a11y.lang} />
             <a href="#contact"
-              className="text-xs font-semibold px-4 py-2 rounded-lg no-underline transition-all duration-150"
-              style={{ background: B.gold, color: '#0a0f1e', boxShadow: B.goldSh }}
-              onMouseOver={e => (e.currentTarget.style.background = B.goldHov)}
-              onMouseOut={e  => (e.currentTarget.style.background = B.gold)}>
+              className="text-xs font-semibold px-3 md:px-4 py-2 rounded-lg no-underline whitespace-nowrap"
+              style={{ background: B.gold, color: B.ink }}>
               {t.nav.bookCall}
             </a>
           </div>
         </div>
       </nav>
 
-      {/* ── HERO ─────────────────────────────────────────────────────────── */}
-      <ShaderBackground />
-
-      <section className="relative min-h-screen flex flex-col items-center justify-start pt-[136px] pb-24 text-center overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ background: 'radial-gradient(ellipse 80% 68% at 50% 44%, rgba(3,6,16,0.92) 0%, rgba(3,6,16,0.65) 45%, transparent 72%)' }} />
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 pointer-events-none w-full h-[380px]"
-          style={{ background: 'radial-gradient(ellipse at center bottom, rgba(200,162,74,0.10) 0%, transparent 65%)' }} />
-
-        <div className="relative z-10 max-w-[860px] mx-auto px-8 flex flex-col items-center gap-6">
-
-          <div className="inline-flex items-center gap-2 text-[0.76rem] font-semibold px-3.5 py-1.5 rounded-full tracking-wide"
-            style={{ background: B.gold08, border: `1px solid ${B.goldB35}`, color: B.goldLt }}>
-            <span style={{ color: B.gold }}>◆</span>
-            {t.hero.badge}
-          </div>
-
-          <h1 className="text-[clamp(2.6rem,6vw,4.4rem)] font-black leading-[1.07] tracking-[-0.036em] m-0">
-            {t.hero.h1a}<br />
-            <span style={{ color: B.goldLt }}>{t.hero.h1b}</span>
-          </h1>
-
-          <p className="text-[1.05rem] max-w-[530px] leading-[1.78] m-0" style={{ color: '#9ba8bc' }}>
-            {t.hero.sub}
-          </p>
-
-          <div className="flex gap-3.5 flex-wrap justify-center mt-1">
-            <a href="#contact"
-              className="inline-flex items-center gap-2 text-sm font-semibold px-6 py-3 rounded-lg no-underline transition-all duration-150"
-              style={{ background: B.gold, color: '#0a0f1e', boxShadow: B.goldSh }}
-              onMouseOver={e => (e.currentTarget.style.background = B.goldHov)}
-              onMouseOut={e  => (e.currentTarget.style.background = B.gold)}>
-              {t.hero.ctaPrimary}
-            </a>
-            <a href="#how-it-works"
-              className="inline-flex items-center gap-2 text-sm font-semibold px-6 py-3 rounded-lg no-underline transition-colors duration-150"
-              style={{ background: 'rgba(255,255,255,0.05)', color: 'white', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(8px)' }}
-              onMouseOver={e => { e.currentTarget.style.borderColor = B.goldB35; e.currentTarget.style.background = B.gold08 }}
-              onMouseOut={e  => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}>
-              {t.hero.ctaSecondary}
-            </a>
-          </div>
-
-          <div className="flex gap-4 flex-wrap justify-center mt-3">
-            {t.hero.stats.map(({ num, desc }) => (
-              <div key={num} className="text-left px-6 py-4 rounded-xl"
-                style={{ background: 'rgba(8,12,26,0.78)', border: `1px solid ${B.blueB30}`, backdropFilter: 'blur(12px)' }}>
-                <div className="font-mono text-[1.85rem] font-semibold leading-none" style={{ color: B.gold }}>{num}</div>
-                <div className="text-xs mt-1.5 leading-[1.5] whitespace-pre-line" style={{ color: '#8896a8' }}>{desc}</div>
+      <main id="main">
+        <section id="top" className="relative pt-24 pb-10 md:pt-28 md:pb-16 px-5 md:px-8 overflow-hidden">
+          <div className="max-w-[1160px] mx-auto grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+            <div className="min-w-0">
+              <div
+                className="inline-flex items-center gap-2 text-[0.76rem] font-semibold px-3.5 py-1.5 rounded-full mb-5"
+                style={{ background: 'rgba(200,162,74,0.12)', border: '1px solid rgba(138,100,24,0.35)', color: B.goldInk }}
+              >
+                <span aria-hidden="true">◆</span>
+                {t.hero.badge}
               </div>
-            ))}
-          </div>
-
-          <div className="mt-7 w-full">
-            <p className="text-[0.72rem] uppercase tracking-[0.12em] mb-4" style={{ color: '#566070' }}>
-              {t.hero.trustLine}
-            </p>
-          </div>
-        </div>
-
-        {/* Dashboard mockup */}
-        <div className="relative z-10 w-full max-w-[960px] mx-auto mt-14 px-8">
-          <div className="rounded-2xl overflow-hidden"
-            style={{
-              background: 'rgba(6,10,24,0.96)',
-              border: `1px solid ${B.blueB30}`,
-              boxShadow: `0 0 0 1px rgba(200,162,74,0.05), 0 28px 80px rgba(0,0,0,0.75), 0 0 80px rgba(31,58,95,0.25)`,
-            }}>
-            <div className="flex items-center gap-2 px-5 py-2.5 border-b"
-              style={{ background: 'rgba(8,10,24,0.98)', borderColor: B.blueB30 }}>
-              <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
-              <div className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
-              <div className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
-              <span className="font-mono text-[0.72rem] ml-3" style={{ color: '#8896a8' }}>
-                {t.hero.dashboard.title}
-              </span>
-            </div>
-            <div className="p-6" style={{ background: 'rgba(4,6,18,0.98)' }}>
-              <div className="grid grid-cols-3 gap-4 mb-5">
-                {t.hero.dashboard.metrics.map(({ label, val, suffix, sub }) => (
-                  <div key={label} className="rounded-xl p-3.5"
-                    style={{ background: 'rgba(20,28,52,0.60)', border: `1px solid ${B.blueB30}` }}>
-                    <div className="text-[0.63rem] uppercase tracking-[0.09em] mb-1.5" style={{ color: '#8896a8' }}>{label}</div>
-                    <div className="font-mono text-[1.55rem] font-semibold leading-none" style={{ color: B.gold }}>
-                      {val}<span className="text-sm" style={{ color: '#8896a8' }}>{suffix}</span>
-                    </div>
-                    <div className="text-[0.63rem] mt-1" style={{ color: '#3dfd98' }}>{sub}</div>
+              <h1 className="text-[clamp(2.3rem,5.2vw,4rem)] font-black leading-[1.05] tracking-[-0.03em] m-0" style={{ color: B.ink }}>
+                {t.hero.h1a}<br />
+                <span style={{ color: B.goldInk }}>{t.hero.h1b}</span>
+              </h1>
+              <p className="text-[1.02rem] max-w-[34rem] leading-[1.75] mt-5 mb-0" style={{ color: B.muted }}>
+                {t.hero.sub}
+              </p>
+              <div className="flex gap-3 flex-wrap mt-6">
+                <PrimaryLink href="#contact">{t.hero.ctaPrimary}</PrimaryLink>
+                <GhostLink href="#how-it-works">{t.hero.ctaSecondary}</GhostLink>
+              </div>
+              <div className="grid grid-cols-3 gap-2.5 sm:gap-3 mt-7">
+                {t.hero.stats.map(({ num, desc }) => (
+                  <div key={num} className="rounded-xl px-3 py-3 sm:px-4" style={{ background: '#fff', border: `1px solid ${B.line}` }}>
+                    <div className="font-mono text-[1.35rem] sm:text-[1.6rem] font-semibold leading-none" style={{ color: B.goldInk }}>{num}</div>
+                    <div className="text-[0.68rem] sm:text-xs mt-1.5 leading-[1.4] whitespace-pre-line" style={{ color: B.muted }}>{desc}</div>
                   </div>
                 ))}
               </div>
-              <div className="rounded-xl p-4 min-h-[110px]"
-                style={{ background: 'rgba(20,28,52,0.30)', border: `1px solid ${B.blueB30}` }}>
-                <div className="text-[0.63rem] uppercase tracking-[0.09em] mb-3" style={{ color: '#8896a8' }}>
-                  {t.hero.dashboard.chartLabel}
-                </div>
-                <svg viewBox="0 0 800 90" width="100%" height="68" style={{ display: 'block', overflow: 'visible' }}>
-                  <defs>
-                    <linearGradient id="gGold" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#C8A24A" stopOpacity="0.9" />
-                      <stop offset="100%" stopColor="#C8A24A" stopOpacity="0.2" />
-                    </linearGradient>
-                    <linearGradient id="gBlue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#2F5D8C" stopOpacity="0.9" />
-                      <stop offset="100%" stopColor="#2F5D8C" stopOpacity="0.2" />
-                    </linearGradient>
-                  </defs>
-                  <rect x="20"  y="36" width="55" height="54" fill="url(#gGold)" rx="4" />
-                  <rect x="115" y="18" width="55" height="72" fill="url(#gGold)" rx="4" />
-                  <rect x="210" y="9"  width="55" height="81" fill="url(#gGold)" rx="4" />
-                  <rect x="305" y="27" width="55" height="63" fill="url(#gBlue)" rx="4" />
-                  <rect x="400" y="4"  width="55" height="86" fill="url(#gGold)" rx="4" />
-                  <rect x="495" y="22" width="55" height="68" fill="url(#gBlue)" rx="4" />
-                  <rect x="590" y="12" width="55" height="78" fill="url(#gGold)" rx="4" />
-                </svg>
+              <p className="text-[0.72rem] uppercase tracking-[0.12em] mt-6 mb-0" style={{ color: B.muted }}>
+                {t.hero.trustLine}
+              </p>
+            </div>
+
+            <div className="min-w-0">
+              <div className="flex items-baseline gap-3 mb-3">
+                <span className="text-[0.72rem] font-bold uppercase tracking-[0.14em]" style={{ color: B.goldInk }}>{t.startHere.kicker}</span>
+                <span className="text-sm font-semibold">{t.startHere.heading}</span>
               </div>
+              <div className="start-cards" aria-label={t.nav.offerings}>
+                {t.offerings.items.map((o, i) => {
+                  const id: InterestId = i === 0 ? 'assistant' : 'receipts'
+                  const accent = i === 0 ? B.blue : B.gold
+                  return (
+                    <article
+                      key={o.h3}
+                      className="rounded-2xl p-5 flex flex-col"
+                      style={{ background: '#fff', border: `1px solid ${B.line}`, borderTop: `3px solid ${accent}` }}
+                    >
+                      <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] mb-2" style={{ color: B.goldInk, fontFamily: 'Roboto Mono, monospace' }}>{o.tag}</span>
+                      <h2 className="text-[1.15rem] font-bold tracking-tight m-0 mb-2">{o.h3}</h2>
+                      <p className="text-sm leading-[1.65] m-0 mb-4" style={{ color: B.muted }}>{o.desc}</p>
+                      <div className="grid grid-cols-2 gap-3 mb-3 text-xs">
+                        <div>
+                          <div className="uppercase tracking-[0.08em] font-semibold mb-1" style={{ color: B.goldInk }}>{t.offerings.launch}</div>
+                          <div className="font-semibold">{o.launch}</div>
+                        </div>
+                        <div>
+                          <div className="uppercase tracking-[0.08em] font-semibold mb-1" style={{ color: B.goldInk }}>{t.offerings.bestFor}</div>
+                          <div style={{ color: B.muted }}>{o.bestFor}</div>
+                        </div>
+                      </div>
+                      <p className="text-xs leading-[1.55] m-0 mb-4" style={{ color: B.ink }}>
+                        <strong>{i === 0 ? t.startHere.assistantProof : receiptProof}</strong>
+                      </p>
+                      <div className="mt-auto flex flex-wrap items-center gap-3">
+                        <a
+                          href="#contact"
+                          onClick={() => choose(id)}
+                          className="text-xs font-semibold px-3.5 py-2 rounded-lg no-underline"
+                          style={{ background: 'rgba(200,162,74,0.16)', color: B.ink, border: '1px solid rgba(138,100,24,0.35)' }}
+                        >
+                          {t.startHere.book}
+                        </a>
+                        <a href="#offerings" className="text-xs font-semibold no-underline" style={{ color: B.goldInk }}>
+                          {t.startHere.details}
+                        </a>
+                      </div>
+                    </article>
+                  )
+                })}
+              </div>
+              <p className="text-sm mt-4 mb-0" style={{ color: B.muted }}>
+                {t.startHere.unsureBefore}
+                <a href="#contact" onClick={() => choose('unsure')} className="font-semibold no-underline" style={{ color: B.goldInk }}>
+                  {t.startHere.unsureLink}
+                </a>
+                {t.startHere.unsureAfter}
+              </p>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── HOW IT WORKS ─────────────────────────────────────────────────── */}
-      <section id="how-it-works" className="py-24 px-8" style={{ background: '#060d1b' }}>
-        <Divider />
-        <div className="max-w-[1160px] mx-auto pt-24">
-          <span className="block text-[0.72rem] font-bold uppercase tracking-[0.14em] mb-4" style={{ color: B.gold }}>
-            {t.hiw.label}
-          </span>
-          <div className="flex items-end justify-between flex-wrap gap-6 mb-14">
-            <h2 className="text-[clamp(1.7rem,4vw,2.6rem)] font-extrabold tracking-tight leading-[1.12] m-0">
-              {t.hiw.h2a}<br />
-              <span style={{ color: B.goldLt }}>{t.hiw.h2b}</span>
+        <section id="offerings" className="section-pad" style={{ background: '#F6F3EC' }}>
+          <div className="max-w-[1160px] mx-auto">
+            <Eyebrow>{t.offerings.label}</Eyebrow>
+            <h2 className="text-[clamp(1.7rem,4vw,2.6rem)] font-extrabold tracking-tight leading-[1.15] m-0 mb-3">
+              {t.offerings.h2a}<br />
+              <span style={{ color: B.goldInk }}>{t.offerings.h2b}</span>
             </h2>
-            <a href="#contact"
-              className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-lg no-underline transition-colors duration-150 flex-shrink-0"
-              style={{ background: B.gold08, border: `1px solid ${B.goldB35}`, color: B.goldLt }}
-              onMouseOver={e => (e.currentTarget.style.background = B.gold12)}
-              onMouseOut={e  => (e.currentTarget.style.background = B.gold08)}>
-              {t.hiw.cta}
-            </a>
-          </div>
-          <div className="grid grid-cols-3 gap-10">
-            {t.hiw.steps.map(({ num, title, desc }, i) => {
-              const icons = [
-                <path key="i" d="M3 9h12M3 5h12M3 13h8" stroke={B.gold} strokeWidth="1.75" strokeLinecap="round" />,
-                <path key="i" d="M3 14l3-7 4 5 2.5-3.5 3 5.5" stroke={B.gold} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />,
-                <><circle key="c" cx="9" cy="9" r="4" stroke={B.gold} strokeWidth="1.75" /><path key="p" d="M9 4V2M9 16v-2M4 9H2M16 9h-2" stroke={B.gold} strokeWidth="1.75" strokeLinecap="round" /></>,
-              ]
-              return (
-                <div key={num}>
-                  <div className="font-mono text-[3.5rem] font-bold leading-none tracking-tight mb-5 select-none"
-                    style={{ color: 'rgba(200,162,74,0.12)' }}>{num}</div>
-                  <div className="w-9 h-9 rounded-[9px] flex items-center justify-center mb-4"
-                    style={{ background: B.gold08, border: `1px solid ${B.goldB35}` }}>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">{icons[i]}</svg>
-                  </div>
-                  <h3 className="text-[1.05rem] font-bold m-0 mb-2.5 tracking-tight">{title}</h3>
-                  <p className="text-sm leading-[1.78] m-0" style={{ color: '#8896a8' }}>{desc}</p>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* ── SERVICES ─────────────────────────────────────────────────────── */}
-      <section id="services" className="py-24 px-8" style={{ background: '#060d1b' }}>
-        <Divider />
-        <div className="max-w-[1160px] mx-auto pt-24">
-          <span className="block text-[0.72rem] font-bold uppercase tracking-[0.14em] mb-4" style={{ color: B.gold }}>
-            {t.services.label}
-          </span>
-          <h2 className="text-[clamp(1.7rem,4vw,2.6rem)] font-extrabold tracking-tight leading-[1.4] m-0 mb-12 max-w-[560px] whitespace-pre-line">
-            {t.services.h2}
-          </h2>
-          <div className="grid grid-cols-2 gap-6">
-
-            <div className="rounded-2xl p-8 transition-all duration-200 hover:-translate-y-0.5"
-              style={{ background: '#0b1524', border: `1px solid ${B.blueB30}` }}
-              onMouseOver={e => (e.currentTarget.style.borderColor = B.goldB35)}
-              onMouseOut={e  => (e.currentTarget.style.borderColor = B.blueB30)}>
-              <div className="inline-flex items-center gap-2 text-[0.75rem] font-semibold px-3 py-1 rounded-full mb-6"
-                style={{ background: B.gold08, border: `1px solid ${B.goldB35}`, color: B.goldLt }}>
-                {t.services.ceo.badge}
-              </div>
-              <h3 className="text-[1.25rem] font-bold tracking-tight m-0 mb-3.5">{t.services.ceo.h3}</h3>
-              <p className="text-sm leading-[1.78] m-0 mb-6" style={{ color: '#8896a8' }}>{t.services.ceo.desc}</p>
-              <ul className="list-none p-0 m-0 flex flex-col gap-2.5">
-                {t.services.ceo.items.map(item => (
-                  <li key={item} className="flex items-start gap-2.5 text-sm" style={{ color: 'rgba(255,255,255,0.82)' }}>
-                    <span className="font-bold mt-0.5 flex-shrink-0" style={{ color: B.gold }}>✓</span> {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="rounded-2xl p-8 transition-all duration-200 hover:-translate-y-0.5"
-              style={{ background: '#0b1524', border: `1px solid ${B.blueB30}` }}
-              onMouseOver={e => (e.currentTarget.style.borderColor = B.blueB45)}
-              onMouseOut={e  => (e.currentTarget.style.borderColor = B.blueB30)}>
-              <div className="inline-flex items-center gap-2 text-[0.75rem] font-semibold px-3 py-1 rounded-full mb-6"
-                style={{ background: 'rgba(47,93,140,0.15)', border: `1px solid ${B.blueB45}`, color: '#7eb4e0' }}>
-                {t.services.ops.badge}
-              </div>
-              <h3 className="text-[1.25rem] font-bold tracking-tight m-0 mb-3.5">{t.services.ops.h3}</h3>
-              <p className="text-sm leading-[1.78] m-0 mb-6" style={{ color: '#8896a8' }}>{t.services.ops.desc}</p>
-              <ul className="list-none p-0 m-0 flex flex-col gap-2.5">
-                {t.services.ops.items.map(item => (
-                  <li key={item} className="flex items-start gap-2.5 text-sm" style={{ color: 'rgba(255,255,255,0.82)' }}>
-                    <span className="font-bold mt-0.5 flex-shrink-0" style={{ color: '#7eb4e0' }}>✓</span> {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── OFFERINGS ────────────────────────────────────────────────────── */}
-      <section id="offerings" className="py-24 px-8" style={{ background: '#060d1b' }}>
-        <Divider />
-        <div className="max-w-[1160px] mx-auto pt-24">
-          <span className="block text-[0.72rem] font-bold uppercase tracking-[0.14em] mb-4" style={{ color: B.gold }}>
-            {t.offerings.label}
-          </span>
-          <h2 className="text-[clamp(1.7rem,4vw,2.6rem)] font-extrabold tracking-tight leading-[1.25] m-0 mb-4">
-            {t.offerings.h2a}<br />
-            <span style={{ color: B.goldLt }}>{t.offerings.h2b}</span>
-          </h2>
-          <p className="text-base m-0 mb-12 max-w-[560px]" style={{ color: '#8896a8' }}>{t.offerings.sub}</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {t.offerings.items.map((o, i) => {
-              const accent = i === 0 ? '#7eb4e0' : B.goldLt
-              return (
-                <div key={o.h3} className="rounded-2xl p-8 flex flex-col transition-all duration-200 hover:-translate-y-0.5"
-                  style={{ background: '#0b1524', border: `1px solid ${B.blueB30}`, borderTop: `3px solid ${i === 0 ? B.blue : B.gold}` }}>
-                  <span className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] mb-3" style={{ color: accent, fontFamily: 'Roboto Mono, monospace' }}>{o.tag}</span>
+            <p className="text-base m-0 mb-8 max-w-[36rem]" style={{ color: B.muted }}>{t.offerings.sub}</p>
+            <div className="grid md:grid-cols-2 gap-5">
+              {t.offerings.items.map((o, i) => (
+                <article key={o.h3} className="rounded-2xl p-6 md:p-8 flex flex-col" style={{ background: '#fff', border: `1px solid ${B.line}`, borderTop: `3px solid ${i === 0 ? B.blue : B.gold}` }}>
+                  <span className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] mb-3" style={{ color: B.goldInk, fontFamily: 'Roboto Mono, monospace' }}>{o.tag}</span>
                   <h3 className="text-[1.3rem] font-bold tracking-tight m-0 mb-3">{o.h3}</h3>
-                  <p className="text-sm leading-[1.78] m-0 mb-6" style={{ color: '#8896a8' }}>{o.desc}</p>
-                  <ul className="list-none p-0 m-0 flex flex-col gap-2.5 mb-6">
+                  <p className="text-sm leading-[1.75] m-0 mb-5" style={{ color: B.muted }}>{o.desc}</p>
+                  <ul className="list-none p-0 m-0 flex flex-col gap-2.5 mb-5">
                     {o.points.map(pt => (
-                      <li key={pt} className="flex items-start gap-2.5 text-sm" style={{ color: 'rgba(255,255,255,0.82)' }}>
-                        <span className="font-bold mt-0.5 flex-shrink-0" style={{ color: accent }}>✓</span> {pt}
+                      <li key={pt} className="flex items-start gap-2.5 text-sm">
+                        <span className="font-bold mt-0.5 flex-shrink-0" style={{ color: B.goldInk }}>✓</span>
+                        <span>{pt}</span>
                       </li>
                     ))}
                   </ul>
                   {o.proof && (
-                    <p className="text-[0.82rem] leading-[1.65] m-0 mb-6 rounded-lg px-4 py-3"
-                      style={{ background: B.gold08, borderLeft: `3px solid ${B.gold}`, color: 'rgba(255,255,255,0.78)' }}>{o.proof}</p>
+                    <p className="text-[0.82rem] leading-[1.65] m-0 mb-5 rounded-lg px-4 py-3" style={{ background: 'rgba(200,162,74,0.10)', borderLeft: `3px solid ${B.gold}`, color: B.ink }}>
+                      {o.proof}
+                    </p>
                   )}
-                  <div className="mt-auto flex flex-wrap gap-x-6 gap-y-1 text-[0.8rem]" style={{ color: '#8896a8' }}>
-                    <span><b style={{ color: 'rgba(255,255,255,0.85)' }}>{t.offerings.bestFor}:</b> {o.bestFor}</span>
-                    <span><b style={{ color: 'rgba(255,255,255,0.85)' }}>{t.offerings.launch}:</b> {o.launch}</span>
+                  <div className="mt-auto text-[0.8rem] leading-relaxed" style={{ color: B.muted }}>
+                    <div><b style={{ color: B.ink }}>{t.offerings.bestFor}:</b> {o.bestFor}</div>
+                    <div><b style={{ color: B.ink }}>{t.offerings.launch}:</b> {o.launch}</div>
                   </div>
-                </div>
-              )
-            })}
+                </article>
+              ))}
+            </div>
+            <a href="/apex-nexus-offerings.pdf" target="_blank" rel="noopener"
+              className="inline-flex items-center mt-8 text-sm font-semibold px-5 py-2.5 rounded-lg no-underline"
+              style={{ background: 'rgba(200,162,74,0.12)', border: '1px solid rgba(138,100,24,0.35)', color: B.ink }}>
+              {t.offerings.download}
+            </a>
           </div>
-          <a href="/apex-nexus-offerings.pdf" target="_blank" rel="noopener"
-            className="inline-flex items-center mt-10 text-sm font-semibold px-5 py-2.5 rounded-lg no-underline transition-colors duration-150"
-            style={{ background: B.gold08, border: `1px solid ${B.goldB35}`, color: B.goldLt }}
-            onMouseOver={e => (e.currentTarget.style.background = B.gold12)}
-            onMouseOut={e  => (e.currentTarget.style.background = B.gold08)}>
-            {t.offerings.download}
-          </a>
-        </div>
-      </section>
+        </section>
 
-      {/* ── RESULTS ──────────────────────────────────────────────────────── */}
-      <section id="results" className="py-24 px-8" style={{ background: '#060d1b' }}>
-        <GoldDivider />
-        <div className="max-w-[1160px] mx-auto pt-24">
-          <span className="block text-[0.72rem] font-bold uppercase tracking-[0.14em] mb-4" style={{ color: B.gold }}>
-            {t.results.label}
-          </span>
-          <h2 className="text-[clamp(1.7rem,4vw,2.6rem)] font-extrabold tracking-tight leading-[1.12] m-0 mb-12">
-            {t.results.h2a}<br />
-            <span style={{ color: B.goldLt }}>{t.results.h2b}</span>
-          </h2>
-          <div className="grid grid-cols-3 gap-6">
-            {t.results.cases.map(({ metric, desc, detail, tag }) => (
-              <div key={metric} className="rounded-2xl p-7 flex flex-col gap-4 hover:-translate-y-0.5 transition-transform duration-200"
-                style={{ background: '#0b1524', border: `1px solid ${B.blueB30}` }}>
-                <div>
-                  <div className="font-mono text-[2.8rem] font-bold leading-none tracking-tight" style={{ color: B.gold }}>{metric}</div>
-                  <div className="text-sm font-semibold mt-2 leading-[1.45]">{desc}</div>
-                </div>
-                <p className="text-[0.82rem] leading-[1.75] m-0 flex-1" style={{ color: '#8896a8' }}>{detail}</p>
-                <div className="inline-flex items-center self-start text-[0.68rem] font-semibold px-2.5 py-1 rounded-full"
-                  style={{ background: B.gold08, border: `1px solid ${B.goldB20}`, color: B.goldLt }}>
-                  {tag}
-                </div>
+        <section id="results" className="section-pad" style={{ background: '#FBF8F2' }}>
+          <div className="max-w-[1160px] mx-auto">
+            <Eyebrow>{t.results.label}</Eyebrow>
+            <h2 className="text-[clamp(1.7rem,4vw,2.6rem)] font-extrabold tracking-tight leading-[1.12] m-0 mb-8">
+              {t.results.h2a}<br />
+              <span style={{ color: B.goldInk }}>{t.results.h2b}</span>
+            </h2>
+            <div className="swipe-row swipe-3">
+              {t.results.cases.map(({ metric, desc, detail, tag }) => (
+                <article key={metric} className="rounded-2xl p-6 flex flex-col gap-3" style={{ background: '#fff', border: `1px solid ${B.line}` }}>
+                  <div className="font-mono text-[2.2rem] font-bold leading-none" style={{ color: B.goldInk }}>{metric}</div>
+                  <div className="text-sm font-semibold leading-[1.45]">{desc}</div>
+                  <p className="text-[0.82rem] leading-[1.7] m-0 flex-1" style={{ color: B.muted }}>{detail}</p>
+                  <div className="inline-flex self-start text-[0.68rem] font-semibold px-2.5 py-1 rounded-full" style={{ background: 'rgba(200,162,74,0.12)', color: B.goldInk }}>
+                    {tag}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <Booking t={t} interest={interest} setInterest={setInterest} />
+
+        <section id="how-it-works" className="section-pad" style={{ background: '#F6F3EC' }}>
+          <div className="max-w-[1160px] mx-auto">
+            <div className="flex items-end justify-between flex-wrap gap-6 mb-8">
+              <div>
+                <Eyebrow>{t.hiw.label}</Eyebrow>
+                <h2 className="text-[clamp(1.7rem,4vw,2.6rem)] font-extrabold tracking-tight leading-[1.12] m-0">
+                  {t.hiw.h2a}<br />
+                  <span style={{ color: B.goldInk }}>{t.hiw.h2b}</span>
+                </h2>
               </div>
-            ))}
+              <a href="#contact" className="text-sm font-semibold px-5 py-2.5 rounded-lg no-underline" style={{ background: 'rgba(200,162,74,0.12)', border: '1px solid rgba(138,100,24,0.35)', color: B.ink }}>
+                {t.hiw.cta}
+              </a>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              {t.hiw.steps.map(({ num, title, desc }) => (
+                <div key={num}>
+                  <div className="font-mono text-[2.4rem] font-bold leading-none mb-3" style={{ color: 'rgba(138,100,24,0.35)' }}>{num}</div>
+                  <h3 className="text-[1.05rem] font-bold m-0 mb-2">{title}</h3>
+                  <p className="text-sm leading-[1.75] m-0" style={{ color: B.muted }}>{desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── ABOUT ────────────────────────────────────────────────────────── */}
-      <section id="about" className="py-24 px-8 overflow-hidden" style={{ background: '#060d1b' }}>
-        <Divider />
-        <div className="max-w-[1160px] mx-auto pt-24">
-          <div className="grid grid-cols-2 gap-20 items-center">
+        <section id="services" className="section-pad" style={{ background: '#FBF8F2' }}>
+          <div className="max-w-[1160px] mx-auto">
+            <Eyebrow>{t.services.label}</Eyebrow>
+            <h2 className="text-[clamp(1.7rem,4vw,2.6rem)] font-extrabold tracking-tight leading-[1.25] m-0 mb-8 max-w-[36rem] whitespace-pre-line">
+              {t.services.h2}
+            </h2>
+            <div className="grid md:grid-cols-2 gap-5">
+              {([t.services.ceo, t.services.ops] as const).map(card => (
+                <article key={card.h3} className="rounded-2xl p-6 md:p-8" style={{ background: '#fff', border: `1px solid ${B.line}` }}>
+                  <div className="inline-flex text-[0.75rem] font-semibold px-3 py-1 rounded-full mb-5" style={{ background: 'rgba(200,162,74,0.12)', color: B.goldInk }}>
+                    {card.badge}
+                  </div>
+                  <h3 className="text-[1.2rem] font-bold tracking-tight m-0 mb-3">{card.h3}</h3>
+                  <p className="text-sm leading-[1.75] m-0 mb-5" style={{ color: B.muted }}>{card.desc}</p>
+                  <ul className="list-none p-0 m-0 flex flex-col gap-2.5">
+                    {card.items.map(item => (
+                      <li key={item} className="flex items-start gap-2.5 text-sm">
+                        <span className="font-bold flex-shrink-0" style={{ color: B.goldInk }}>✓</span> {item}
+                      </li>
+                    ))}
+                  </ul>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="about" className="section-pad" style={{ background: '#F6F3EC' }}>
+          <div className="max-w-[1160px] mx-auto grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <span className="block text-[0.72rem] font-bold uppercase tracking-[0.14em] mb-4" style={{ color: B.gold }}>
-                {t.about.label}
-              </span>
+              <Eyebrow>{t.about.label}</Eyebrow>
               <h2 className="text-[clamp(1.7rem,3.5vw,2.5rem)] font-extrabold tracking-tight leading-[1.12] m-0">
                 {t.about.h2a}<br />{t.about.h2b}
               </h2>
-              <p className="text-[0.925rem] leading-[1.82] mt-5 mb-0" style={{ color: '#8896a8' }}>
-                {t.about.desc}
-              </p>
-              <div className="flex flex-col gap-5 mt-8">
+              <p className="text-[0.95rem] leading-[1.8] mt-4 mb-0" style={{ color: B.muted }}>{t.about.desc}</p>
+              <div className="flex flex-col gap-5 mt-7">
                 {t.about.pillars.map(({ n, title, desc }) => (
                   <div key={n} className="flex gap-4 items-start">
-                    <div className="w-9 h-9 rounded-lg flex-shrink-0 flex items-center justify-center font-mono text-[0.78rem] font-semibold"
-                      style={{ background: B.gold08, border: `1px solid ${B.goldB35}`, color: B.gold }}>
+                    <div className="w-9 h-9 rounded-lg flex-shrink-0 flex items-center justify-center font-mono text-[0.78rem] font-semibold" style={{ background: 'rgba(200,162,74,0.12)', color: B.goldInk }}>
                       {n}
                     </div>
                     <div>
                       <strong className="text-sm font-semibold block mb-0.5">{title}</strong>
-                      <span className="text-[0.83rem] leading-[1.65]" style={{ color: '#8896a8' }}>{desc}</span>
+                      <span className="text-[0.83rem] leading-[1.65]" style={{ color: B.muted }}>{desc}</span>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-
-            <div className="relative pb-6">
-              <div className="rounded-2xl p-7 relative overflow-hidden"
-                style={{ background: '#0b1524', border: `1px solid ${B.blueB30}` }}>
-                <div className="absolute -top-14 -right-14 w-64 h-64 pointer-events-none rounded-full"
-                  style={{ background: 'radial-gradient(circle, rgba(200,162,74,0.07) 0%, transparent 65%)' }} />
-                <div className="relative z-10">
-                  <img src="https://placehold.co/440x260/0b1524/1F3A5F?text=AI+Strategy+Session"
-                    alt={t.about.card.imgAlt}
-                    className="w-full rounded-xl mb-5 block" />
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center"
-                      style={{ background: 'linear-gradient(135deg, #1F3A5F, #2F5D8C)' }}>
-                      <LogoMark size={20} />
-                    </div>
-                    <div>
-                      <div className="text-sm font-semibold">{t.about.card.name}</div>
-                      <div className="text-xs" style={{ color: '#8896a8' }}>{t.about.card.subtitle}</div>
-                    </div>
-                    <div className="ml-auto text-[0.68rem] font-semibold px-2.5 py-1 rounded-full"
-                      style={{ background: B.gold08, border: `1px solid ${B.goldB35}`, color: B.goldLt }}>
-                      {t.about.card.available}
-                    </div>
+            <div className="relative pb-8 min-w-0">
+              <div className="rounded-2xl p-6" style={{ background: '#fff', border: `1px solid ${B.line}` }}>
+                <img
+                  src="https://placehold.co/440x260/F4EFE4/1F3A5F?text=AI+Strategy+Session"
+                  alt={t.about.card.imgAlt}
+                  className="w-full rounded-xl mb-5 block"
+                />
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center" style={{ background: '#E7EEF5' }}>
+                    <LogoMark size={20} />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold">{t.about.card.name}</div>
+                    <div className="text-xs" style={{ color: B.muted }}>{t.about.card.subtitle}</div>
+                  </div>
+                  <div className="ml-auto text-[0.68rem] font-semibold px-2.5 py-1 rounded-full whitespace-nowrap" style={{ background: 'rgba(200,162,74,0.12)', color: B.goldInk }}>
+                    {t.about.card.available}
                   </div>
                 </div>
               </div>
-              <div className="absolute -bottom-0 -left-6 rounded-xl px-4 py-3.5"
-                style={{ background: 'rgba(14,10,36,0.97)', border: `1px solid ${B.goldB35}`, backdropFilter: 'blur(14px)' }}>
-                <div className="text-[0.63rem] uppercase tracking-[0.09em] mb-1" style={{ color: '#8896a8' }}>{t.about.floatCard.label}</div>
-                <div className="font-mono text-[1.35rem] font-bold leading-none" style={{ color: B.gold }}>{t.about.floatCard.value}</div>
-                <div className="text-[0.7rem] mt-0.5" style={{ color: 'rgba(255,255,255,0.7)' }}>{t.about.floatCard.desc}</div>
+              <div className="absolute bottom-0 left-4 rounded-xl px-4 py-3" style={{ background: '#fff', border: `1px solid rgba(138,100,24,0.35)` }}>
+                <div className="text-[0.63rem] uppercase tracking-[0.09em] mb-1" style={{ color: B.muted }}>{t.about.floatCard.label}</div>
+                <div className="font-mono text-[1.2rem] font-bold leading-none" style={{ color: B.goldInk }}>{t.about.floatCard.value}</div>
+                <div className="text-[0.7rem] mt-0.5" style={{ color: B.muted }}>{t.about.floatCard.desc}</div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
 
-      {/* ── CTA ──────────────────────────────────────────────────────────── */}
-      <section id="contact" className="py-28 px-8 relative overflow-hidden text-center" style={{ background: '#060d1b' }}>
-        <GoldDivider />
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ background: 'radial-gradient(ellipse at 50% 100%, rgba(47,93,140,0.18) 0%, transparent 55%), radial-gradient(ellipse at 50% 10%, rgba(200,162,74,0.08) 0%, transparent 55%)' }} />
-        <div className="relative z-10 max-w-[660px] mx-auto flex flex-col items-center gap-6 pt-20">
-          <div className="inline-flex items-center gap-2 text-[0.76rem] font-semibold px-3.5 py-1.5 rounded-full"
-            style={{ background: B.gold08, border: `1px solid ${B.goldB35}`, color: B.goldLt }}>
-            {t.cta.badge}
-          </div>
-          <h2 className="text-[clamp(2rem,5vw,3.25rem)] font-black tracking-tight leading-[1.08] m-0">
-            {t.cta.h2a}<br />{t.cta.h2b}
-          </h2>
-          <p className="text-[1rem] max-w-[480px] leading-[1.78] m-0" style={{ color: '#8896a8' }}>
-            {t.cta.desc}
-          </p>
-          <div className="flex items-center gap-4 flex-wrap justify-center mt-2">
-            <a href="mailto:hello@apexnexus.hk"
-              className="inline-flex items-center gap-2 text-[0.95rem] font-semibold px-7 py-3.5 rounded-lg no-underline transition-colors duration-150"
-              style={{ background: B.gold, color: '#0a0f1e', boxShadow: B.goldSh }}
-              onMouseOver={e => (e.currentTarget.style.background = B.goldHov)}
-              onMouseOut={e  => (e.currentTarget.style.background = B.gold)}>
-              {t.cta.primary}
-            </a>
-            <a href="mailto:hello@apexnexus.hk"
-              className="inline-flex items-center gap-2 text-[0.95rem] font-medium px-7 py-3.5 rounded-lg no-underline transition-colors duration-150"
-              style={{ background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.75)', border: '1px solid rgba(255,255,255,0.12)' }}
-              onMouseOver={e => { e.currentTarget.style.borderColor = B.goldB35; e.currentTarget.style.color = 'white' }}
-              onMouseOut={e  => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.color = 'rgba(255,255,255,0.75)' }}>
-              {t.cta.secondary}
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* ── FOOTER ───────────────────────────────────────────────────────── */}
-      <footer style={{ background: '#04070f', borderTop: `1px solid ${B.blueB30}` }}>
-        <div className="max-w-[1160px] mx-auto px-8 py-12 grid grid-cols-4 gap-10">
-          <div className="col-span-1">
-            <a href="#" className="flex items-center gap-2.5 no-underline mb-4">
-              <LogoMark size={24} />
-              <span className="text-sm font-bold text-white">Apex Nexus</span>
-            </a>
-            <p className="text-[0.8rem] leading-[1.7] m-0 whitespace-pre-line" style={{ color: '#566070' }}>
-              {t.footer.tagline}
-            </p>
-          </div>
-
+      <footer style={{ background: '#EFEAE0', borderTop: `1px solid ${B.line}` }}>
+        <div className="max-w-[1160px] mx-auto px-5 md:px-8 py-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
-            <div className="text-[0.7rem] font-bold uppercase tracking-[0.1em] mb-4" style={{ color: B.gold }}>{t.footer.services.header}</div>
+            <a href="#top" className="flex items-center gap-2.5 no-underline mb-4" style={{ color: B.ink }}>
+              <LogoMark size={24} />
+              <span className="text-sm font-bold">Apex Nexus</span>
+            </a>
+            <p className="text-[0.8rem] leading-[1.7] m-0 whitespace-pre-line" style={{ color: B.muted }}>{t.footer.tagline}</p>
+          </div>
+          <div>
+            <div className="text-[0.7rem] font-bold uppercase tracking-[0.1em] mb-4" style={{ color: B.goldInk }}>{t.footer.services.header}</div>
             <div className="flex flex-col gap-2.5">
               {t.footer.services.links.map(item => (
-                <a key={item} href="#services" className="text-[0.82rem] no-underline hover:text-white transition-colors duration-150"
-                  style={{ color: '#566070' }}>{item}</a>
+                <a key={item} href="#services" className="text-[0.82rem] no-underline" style={{ color: B.muted }}>{item}</a>
               ))}
             </div>
           </div>
-
           <div>
-            <div className="text-[0.7rem] font-bold uppercase tracking-[0.1em] mb-4" style={{ color: B.gold }}>{t.footer.company.header}</div>
+            <div className="text-[0.7rem] font-bold uppercase tracking-[0.1em] mb-4" style={{ color: B.goldInk }}>{t.footer.company.header}</div>
             <div className="flex flex-col gap-2.5">
               {t.footer.company.links.map((item, i) => (
-                <a key={item} href={['#how-it-works','#results','#about','#contact'][i]}
-                  className="text-[0.82rem] no-underline hover:text-white transition-colors duration-150"
-                  style={{ color: '#566070' }}>{item}</a>
+                <a key={item} href={['#how-it-works', '#results', '#about', '#contact'][i]} className="text-[0.82rem] no-underline" style={{ color: B.muted }}>{item}</a>
               ))}
             </div>
           </div>
-
           <div>
-            <div className="text-[0.7rem] font-bold uppercase tracking-[0.1em] mb-4" style={{ color: B.gold }}>{t.footer.contact.header}</div>
+            <div className="text-[0.7rem] font-bold uppercase tracking-[0.1em] mb-4" style={{ color: B.goldInk }}>{t.footer.contact.header}</div>
             <div className="flex flex-col gap-2.5">
-              <a href="mailto:hello@apexnexus.hk" className="text-[0.82rem] no-underline hover:text-white transition-colors duration-150"
-                style={{ color: '#566070' }}>hello@apexnexus.hk</a>
-              <span className="text-[0.82rem]" style={{ color: '#566070' }}>{lang === 'zh' ? '香港特別行政區' : 'Hong Kong SAR'}</span>
-              <a href="https://linkedin.com" className="text-[0.82rem] no-underline hover:text-white transition-colors duration-150"
-                style={{ color: '#566070' }}>LinkedIn</a>
+              <a href="mailto:hello@apexnexus.hk" className="text-[0.82rem] no-underline" style={{ color: B.muted }}>hello@apexnexus.hk</a>
+              <span className="text-[0.82rem]" style={{ color: B.muted }}>{lang === 'zh' ? '香港特別行政區' : 'Hong Kong SAR'}</span>
+              <a href="https://linkedin.com" className="text-[0.82rem] no-underline" style={{ color: B.muted }}>LinkedIn</a>
             </div>
           </div>
         </div>
-
-        <div className="max-w-[1160px] mx-auto px-8 py-5 flex items-center justify-between flex-wrap gap-4"
-          style={{ borderTop: `1px solid ${B.blueB20}` }}>
-          <span className="text-[0.75rem]" style={{ color: '#3a4455' }}>{t.footer.copyright}</span>
+        <div className="max-w-[1160px] mx-auto px-5 md:px-8 py-5 flex items-center justify-between flex-wrap gap-4" style={{ borderTop: `1px solid ${B.line}` }}>
+          <span className="text-[0.75rem]" style={{ color: B.muted }}>{t.footer.copyright}</span>
           <div className="flex gap-6">
-            <a href="#" className="text-[0.75rem] no-underline hover:text-white transition-colors duration-150" style={{ color: '#3a4455' }}>{t.footer.privacy}</a>
-            <a href="#" className="text-[0.75rem] no-underline hover:text-white transition-colors duration-150" style={{ color: '#3a4455' }}>{t.footer.terms}</a>
+            <a href="#" className="text-[0.75rem] no-underline" style={{ color: B.muted }}>{t.footer.privacy}</a>
+            <a href="#" className="text-[0.75rem] no-underline" style={{ color: B.muted }}>{t.footer.terms}</a>
           </div>
         </div>
       </footer>
 
+      {barOn && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden px-3 py-2.5" style={{ background: 'rgba(246,243,236,0.96)', borderTop: `1px solid ${B.line}`, backdropFilter: 'blur(12px)' }}>
+          <div className="flex items-center gap-3">
+            <div className="min-w-0 flex-1">
+              <div className="text-sm font-semibold leading-tight truncate">{t.sticky.title}</div>
+              <div className="text-[0.7rem] truncate" style={{ color: B.muted }}>{t.sticky.sub}</div>
+            </div>
+            <a href="#contact" className="text-sm font-semibold px-4 py-2.5 rounded-lg no-underline flex-shrink-0" style={{ background: B.gold, color: B.ink }}>
+              {t.sticky.cta}
+            </a>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
