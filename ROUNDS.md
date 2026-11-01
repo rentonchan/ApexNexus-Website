@@ -235,3 +235,17 @@ These rounds were committed straight to `main`. Each one is a single focused cha
 - Apple’s Mac page (apple.com/hk/en/mac) keeps the choice inside the header control you opened.
 
 **Verification:** `npm run build` passed. With the menu open, Tab from the last item lands on “Apex Nexus”. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 99.
+
+## Round 50: Make the hero actions full width on a phone
+
+**Commit:** 80975f68ed21565a253515238b710fe32016841b
+
+**Change:** Under 480px, “Book a free consultation” and “See how it works” stack and stretch to the width of the column, so the main action is a full thumb target. Wider screens keep the two buttons side by side.
+
+**Inspiration:**
+
+- Nielsen Norman Group (nngroup.com/articles/menu-design) says a target has to be large enough to tap, and that the time to hit it depends on its size and distance.
+- Apple’s Mac page (apple.com/hk/en/mac) puts Learn more and Buy on the product as the obvious next step, not a small control.
+- IDEO (ideo.com) leads with a direct action, “Build your next era of growth”, rather than a text-sized link.
+
+**Verification:** `npm run build` passed. At 390px the primary hero button is wider than 300px. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu focus trap, offering anchor, BiG Buddy links, and 404. Mobile Lighthouse performance was 99.

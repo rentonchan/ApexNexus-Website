@@ -852,7 +852,7 @@ export default function App() {
               <p className="text-[1.02rem] max-w-[34rem] leading-[1.7] mt-4 mb-0" style={{ color: B.muted }}>
                 {t.hero.sub}
               </p>
-              <div className="flex gap-3 flex-wrap mt-5">
+              <div className="hero-actions flex gap-3 flex-wrap mt-5">
                 <PrimaryLink href="#contact">{t.hero.ctaPrimary}</PrimaryLink>
                 <GhostLink href="#how-it-works">{t.hero.ctaSecondary}</GhostLink>
               </div>

@@ -132,6 +132,15 @@ textarea::placeholder {
   word-break: keep-all;
 }
 .hero-line { display: block; }
+@media (max-width: 479px) {
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .hero-actions > a {
+    width: 100%;
+  }
+}
 .hero-gold { color: #8A6418; }
 
 /* Traditional Chinese: a Hong Kong face, no Latin tightening, more open lines. */
