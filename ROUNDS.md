@@ -193,3 +193,31 @@ These rounds were committed straight to `main`. Each one is a single focused cha
 - IDEO (ideo.com) treats motion as optional, not as the content.
 
 **Verification:** `npm run build` passed. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 99.
+
+## Round 47: Link the BiG Buddy site that the copy already names
+
+**Commit:** bea44ad9116ca35fcebb0d847033155198fff200
+
+**Change:** Every visible “bigcorner.hk” is now a link to https://bigcorner.hk, which already returns the live project. The words around it are unchanged. The link opens in a new tab and reuses the “opens in a new tab” / 「在新分頁開啟」 label for screen readers.
+
+**Inspiration:**
+
+- IDEO (ideo.com) names the work and the organisation it was for, and that name is the way into the project.
+- frog (frog.co) puts “Explore the work” on the piece itself, so the proof is something you can open.
+- Huge (hugeinc.com) lists each piece of work (NBCU, CoinTracker, Google) as a path into that work, not as a dead name.
+
+**Verification:** `npm run build` passed. Four links point at https://bigcorner.hk. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. https://bigcorner.hk returns 200. Mobile Lighthouse performance was 99.
+
+## Round 48: Send “See details” to that offering
+
+**Commit:** cba23c5ffc14dda950e3f65992284a8d718c372a
+
+**Change:** “See details” / 「查看詳情」 on each Start here card now jumps to that offering’s own card, not only to the top of the Offerings section. The card sits below the fixed navigation.
+
+**Inspiration:**
+
+- Apple’s Mac page (apple.com/hk/en/mac) sends “Learn more” to that specific product, not to a generic list.
+- frog (frog.co) “Explore the work” opens the piece you are looking at.
+- IDEO (ideo.com) presents featured work as named projects (Sephora, Eli Lilly, Boom), each with its own path.
+
+**Verification:** `npm run build` passed. Clicking See details on the first card sets the address to #offering-assistant and the card clears the navigation. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 99.

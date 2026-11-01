@@ -896,7 +896,7 @@ export default function App() {
                         >
                           {t.startHere.book}
                         </a>
-                        <a href="#offerings" className="text-xs font-semibold no-underline" style={{ color: B.goldInk }}>
+                        <a href={`#offering-${id}`} className="text-xs font-semibold no-underline" style={{ color: B.goldInk }}>
                           {t.startHere.details}
                         </a>
                       </div>
@@ -925,7 +925,7 @@ export default function App() {
             <p className="text-base m-0 mb-8 max-w-[36rem]" style={{ color: B.muted }}>{t.offerings.sub}</p>
             <div className="grid md:grid-cols-2 gap-5">
               {t.offerings.items.map((o, i) => (
-                <article key={o.h3} className="rounded-2xl p-6 md:p-8 flex flex-col" style={{ background: '#fff', border: `1px solid ${B.line}`, borderTop: `3px solid ${i === 0 ? B.blue : B.gold}` }}>
+                <article id={`offering-${i === 0 ? 'assistant' : 'receipts'}`} key={o.h3} className="offering-anchor rounded-2xl p-6 md:p-8 flex flex-col" style={{ background: '#fff', border: `1px solid ${B.line}`, borderTop: `3px solid ${i === 0 ? B.blue : B.gold}` }}>
                   <span className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] mb-3" style={{ color: B.goldInk, fontFamily: 'Roboto Mono, monospace' }}>{o.tag}</span>
                   <h3 className="text-[1.3rem] font-bold tracking-tight m-0 mb-3">{o.h3}</h3>
                   <p className="text-sm leading-[1.75] m-0 mb-5" style={{ color: B.muted }}>{o.desc}</p>
