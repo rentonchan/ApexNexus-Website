@@ -106,6 +106,24 @@ const GhostLink = ({ href, children }: { href: string; children: ReactNode }) =>
   </a>
 )
 
+function HostLink({ text, newTab }: { text: string; newTab: string }) {
+  const parts = text.split(/(bigcorner\.hk)/g)
+  return (
+    <>
+      {parts.map((part, i) =>
+        part === 'bigcorner.hk' ? (
+          <a key={i} href="https://bigcorner.hk" target="_blank" rel="noopener noreferrer" className="underline">
+            bigcorner.hk
+            <span className="book-live"> ({newTab})</span>
+          </a>
+        ) : (
+          <span key={i}>{part}</span>
+        ),
+      )}
+    </>
+  )
+}
+
 function DecorBackground() {
   const [show, setShow] = useState(false)
   useEffect(() => {
@@ -399,7 +417,9 @@ function Booking({
                 </li>
               ))}
             </ol>
-            <p className="text-sm leading-[1.65] mt-5 mb-2" style={{ color: B.ink }}>{b.contactNote}</p>
+            <p className="text-sm leading-[1.65] mt-5 mb-2" style={{ color: B.ink }}>
+              <HostLink text={b.contactNote} newTab={t.a11y.newTab} />
+            </p>
             <p className="text-sm m-0 font-semibold" style={{ color: B.muted }}>
               <time dateTime={clock}>{b.contactHours} {clock}</time>
             </p>
@@ -861,7 +881,11 @@ export default function App() {
                         </div>
                       </div>
                       <p className="text-xs leading-[1.55] m-0 mb-4" style={{ color: B.ink }}>
-                        <strong>{i === 0 ? t.startHere.assistantProof : receiptProof}</strong>
+                        <strong>
+                          {i === 0
+                            ? <HostLink text={t.startHere.assistantProof} newTab={t.a11y.newTab} />
+                            : receiptProof}
+                        </strong>
                       </p>
                       <div className="mt-auto flex flex-wrap items-center gap-3">
                         <a
@@ -960,7 +984,9 @@ export default function App() {
                 <article key={metric} className="rounded-2xl p-6 flex flex-col gap-3" style={{ background: '#fff', border: `1px solid ${B.line}` }}>
                   <div className="font-mono text-[2.2rem] font-bold leading-none" style={{ color: B.goldInk }}>{metric}</div>
                   <div className="text-sm font-semibold leading-[1.45]">{desc}</div>
-                  <p className="text-[0.82rem] leading-[1.7] m-0 flex-1" style={{ color: B.muted }}>{detail}</p>
+                  <p className="text-[0.82rem] leading-[1.7] m-0 flex-1" style={{ color: B.muted }}>
+                    <HostLink text={detail} newTab={t.a11y.newTab} />
+                  </p>
                   {i === 2 && (
                     <a
                       href="#contact"
@@ -1083,7 +1109,9 @@ export default function App() {
                 <div className="mt-6 rounded-xl px-4 py-4" style={{ background: '#F6F3EC', border: '1px solid rgba(138,100,24,0.35)' }}>
                   <div className="text-[0.68rem] uppercase tracking-[0.09em] mb-1.5" style={{ color: B.muted }}>{t.about.floatCard.label}</div>
                   <div className="font-mono text-[1.35rem] font-bold leading-none" style={{ color: B.goldInk }}>{t.about.floatCard.value}</div>
-                  <div className="text-sm mt-1.5" style={{ color: B.muted }}>{t.about.floatCard.desc}</div>
+                  <div className="text-sm mt-1.5" style={{ color: B.muted }}>
+                    <HostLink text={t.about.floatCard.desc} newTab={t.a11y.newTab} />
+                  </div>
                 </div>
               </div>
             </div>
