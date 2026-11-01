@@ -221,3 +221,17 @@ These rounds were committed straight to `main`. Each one is a single focused cha
 - IDEO (ideo.com) presents featured work as named projects (Sephora, Eli Lilly, Boom), each with its own path.
 
 **Verification:** `npm run build` passed. Clicking See details on the first card sets the address to #offering-assistant and the card clears the navigation. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 99.
+
+## Round 49: Keep keyboard focus inside the open phone menu
+
+**Commit:** 0b4680f58884b0939084a0dc8c816bad8a3ff6ba
+
+**Change:** While the phone menu is open, Tab and Shift+Tab cycle through the navigation instead of moving into the page behind it. Escape still closes the menu and returns focus to the menu button.
+
+**Inspiration:**
+
+- The W3C WAI-ARIA dialog pattern (w3.org/WAI/ARIA/apg/patterns/dialog-modal) says Tab stays inside an open layer and Escape closes it.
+- Nielsen Norman Group’s menu checklist (nngroup.com/articles/menu-design) says a menu has to work from the keyboard, not only on hover, and the links have to be easy to operate.
+- Apple’s Mac page (apple.com/hk/en/mac) keeps the choice inside the header control you opened.
+
+**Verification:** `npm run build` passed. With the menu open, Tab from the last item lands on “Apex Nexus”. Shared checks passed: no console errors, no overflow at 390 in English or 中文, booking confirmation in both languages, six FAQ items, sticky bar, mobile menu, and 404. Mobile Lighthouse performance was 99.

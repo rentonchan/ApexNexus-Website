@@ -655,7 +655,24 @@ export default function App() {
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closeMenu(true)
+      if (e.key === 'Escape') {
+        closeMenu(true)
+        return
+      }
+      if (e.key !== 'Tab') return
+      const nav = document.querySelector('nav')
+      if (!nav) return
+      const items = [...nav.querySelectorAll<HTMLElement>('a[href], button')].filter(el => el.offsetParent !== null)
+      if (!items.length) return
+      const first = items[0]
+      const last = items[items.length - 1]
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault()
+        first.focus()
+      }
     }
     const onPointer = (e: PointerEvent) => {
       const nav = document.querySelector('nav')
